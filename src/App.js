@@ -15,6 +15,8 @@ import AuditPage       from './pages/AuditPage';
 import GenericPage     from './pages/GenericPage';
 import QuizPage        from './pages/QuizPage';
 import LoginPage       from './pages/LoginPage';
+import UserMgmtPage from './pages/UserMgmtPage';
+
 
 function AppInner() {
   const { user, portal: authPortal, logout } = useAuth();
@@ -72,7 +74,7 @@ function AppInner() {
       />
       <div className="main">
         <Topbar portal={authPortal} view={view} user={user} onLogout={handleLogout}/>
-        <main className="content">{renderPage()}</main>
+        <main className="content">{renderPage(if (view === 'usermgmt') return <UserMgmtPage />;)}</main>
       </div>
     </div>
   );
