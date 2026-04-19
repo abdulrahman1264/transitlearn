@@ -15,8 +15,7 @@ import AuditPage       from './pages/AuditPage';
 import GenericPage     from './pages/GenericPage';
 import QuizPage        from './pages/QuizPage';
 import LoginPage       from './pages/LoginPage';
-import UserMgmtPage from './pages/UserMgmtPage';
-
+import UserMgmtPage    from './pages/UserMgmtPage';
 
 function AppInner() {
   const { user, portal: authPortal, logout } = useAuth();
@@ -44,6 +43,7 @@ function AppInner() {
     if (authPortal === 'admin') {
       if (view === 'dashboard') return <AdminDashboard onView={setView}/>;
       if (view === 'drivers')   return <DriversPage/>;
+      if (view === 'usermgmt')  return <UserMgmtPage/>;
       if (view === 'drm')       return <DrmPage/>;
       if (view === 'reports')   return <ReportsPage/>;
       if (view === 'audit')     return <AuditPage/>;
@@ -74,7 +74,7 @@ function AppInner() {
       />
       <div className="main">
         <Topbar portal={authPortal} view={view} user={user} onLogout={handleLogout}/>
-        <main className="content">{renderPage(if (view === 'usermgmt') return <UserMgmtPage />;)}</main>
+        <main className="content">{renderPage()}</main>
       </div>
     </div>
   );
