@@ -153,3 +153,60 @@ export const QUIZ_QUESTIONS = [
     correct:1,
   },
 ];
+
+export const TRAINING_CATEGORIES = [
+  {
+    id: 'public-pre',
+    label: 'Public Bus — Pre Service',
+    short: 'Pre-Service',
+    color: 'blue',
+    icon: 'Bus',
+    desc: 'New drivers entering public bus service for the first time',
+    count: 48,
+    active: 12,
+    graduated: 284,
+  },
+  {
+    id: 'public-in',
+    label: 'Public Bus — In Service',
+    short: 'In-Service',
+    color: 'teal',
+    icon: 'Layers',
+    desc: 'Current drivers undergoing refresher and compliance training',
+    count: 36,
+    active: 8,
+    graduated: 196,
+  },
+  {
+    id: 'school-bus',
+    label: 'School Bus Training',
+    short: 'School Bus',
+    color: 'amber',
+    icon: 'Star',
+    desc: 'Specialist training for school bus drivers and child safety',
+    count: 24,
+    active: 6,
+    graduated: 87,
+  },
+];
+
+export const CSV_COLUMNS = [
+  'SL', 'RTA ID', 'License No.', 'Name as per Driving License',
+  'Nationality', 'Date of Birth', 'Date of Issued', 'Date of Expired',
+  'Place of issue', 'Traffic File', 'Contact', 'Age',
+  'Company', 'Date of Road test', 'Interview',
+  'Date of Join Training', 'Training Batch', 'Date of Graduation',
+];
+
+export const SAMPLE_BATCH_DRIVERS = [
+  { sl:1,  rtaId:'90454', licNo:'216815',   name:'Zahid Khan Khaista Bacha',      nationality:'Pakistan', dob:'1-Jan-1998',  issued:'21-Nov-2018', expired:'17-Nov-2029', place:'Fujairah',        traffic:'7180013266',  contact:'971554759730', age:'28.3', company:'Reach',       roadTest:'21-Jan-26', interview:'22-Jan-26', joinDate:'6-Apr-26', batch:'Batch 153', graduation:'' },
+  { sl:2,  rtaId:'90377', licNo:'4062382',  name:'Amjad Khan Liakat Ali',         nationality:'India',    dob:'15-Sep-1992', issued:'8-Nov-2020',  expired:'26-Jun-2028', place:'Dubai',           traffic:'14778406',    contact:'971542425821', age:'33.6', company:'Reach',       roadTest:'23-Dec-25', interview:'29-Dec-25', joinDate:'6-Apr-26', batch:'Batch 153', graduation:'' },
+  { sl:3,  rtaId:'90149', licNo:'3929152',  name:'Avtar Singh Kashmir Singh',     nationality:'India',    dob:'30-Jun-1981', issued:'22-May-2019', expired:'22-May-2026', place:'Dubai',           traffic:'13862953',    contact:'971718412702', age:'44.8', company:'Expert Plus', roadTest:'26-Nov-25', interview:'3-Dec-25',  joinDate:'6-Apr-26', batch:'Batch 153', graduation:'' },
+  { sl:4,  rtaId:'90289', licNo:'63662858', name:'Sallauddin Chirakuddin',        nationality:'India',    dob:'10-Mar-1994', issued:'17-May-2017', expired:'17-May-2027', place:'Dubai',           traffic:'13273585',    contact:'971547078736', age:'32.1', company:'Expert Plus', roadTest:'9-Dec-25',  interview:'15-Dec-25', joinDate:'6-Apr-26', batch:'Batch 153', graduation:'' },
+  { sl:5,  rtaId:'90324', licNo:'3956510',  name:'Yasir Raja Aurangzeb',          nationality:'Pakistan', dob:'7-Nov-1985',  issued:'10-Sep-2019', expired:'10-Sep-2026', place:'Dubai',           traffic:'14222021',    contact:'971507018345', age:'40.5', company:'Expert Plus', roadTest:'9-Dec-25',  interview:'15-Dec-25', joinDate:'6-Apr-26', batch:'Batch 153', graduation:'' },
+  { sl:6,  rtaId:'90374', licNo:'181279',   name:'Hikmat Shah Noor Jamal',        nationality:'Pakistan', dob:'15-Mar-1990', issued:'29-Jun-2016', expired:'28-Jun-2026', place:'Ras Al Khaimah', traffic:'17172888',    contact:'971508676400', age:'36.1', company:'Expert Plus', roadTest:'23-Dec-25', interview:'29-Dec-25', joinDate:'6-Apr-26', batch:'Batch 153', graduation:'' },
+  { sl:7,  rtaId:'90375', licNo:'193280',   name:'Muhammad Arif Tariq Mahmood',   nationality:'Pakistan', dob:'12-Mar-1989', issued:'4-Sep-2018',  expired:'11-Aug-2030', place:'Ajman',           traffic:'17173608',    contact:'971504641206', age:'37.1', company:'Expert Plus', roadTest:'23-Dec-25', interview:'29-Dec-25', joinDate:'6-Apr-26', batch:'Batch 153', graduation:'' },
+  { sl:8,  rtaId:'90345', licNo:'1073084',  name:'Muhammad Bilal Muhammad Fayyaz',nationality:'Pakistan', dob:'25-Apr-1988', issued:'6-Feb-2014',  expired:'23-Jan-2030', place:'Abu Dhabi',       traffic:'13156670',    contact:'971568529987', age:'38.0', company:'Expert Plus', roadTest:'23-Dec-25', interview:'29-Dec-25', joinDate:'6-Apr-26', batch:'Batch 153', graduation:'' },
+  { sl:9,  rtaId:'90342', licNo:'3764243',  name:'Sami Ullah Noor Gul',           nationality:'Pakistan', dob:'14-Jan-1995', issued:'21-Nov-2017', expired:'21-Nov-2029', place:'Dubai',           traffic:'13008996',    contact:'971561379507', age:'31.3', company:'Expert Plus', roadTest:'23-Dec-25', interview:'29-Dec-25', joinDate:'6-Apr-26', batch:'Batch 153', graduation:'' },
+  { sl:10, rtaId:'90343', licNo:'1530126',  name:'Zaheer Ullah Zain Ullah',       nationality:'Pakistan', dob:'4-Apr-1982',  issued:'5-Jan-2010',  expired:'7-Mar-2030',  place:'Dubai',           traffic:'11868644',    contact:'971543143423', age:'44.0', company:'Expert Plus', roadTest:'23-Dec-25', interview:'29-Dec-25', joinDate:'6-Apr-26', batch:'Batch 153', graduation:'' },
+];

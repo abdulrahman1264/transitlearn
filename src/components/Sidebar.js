@@ -1,5 +1,5 @@
 import React from 'react';
-import { NAV, PORTALS } from '../data/mockData';
+import { NAV } from '../data/mockData';
 import Icon from './Icons';
 
 const NAV_ICONS = {
@@ -12,11 +12,7 @@ const NAV_ICONS = {
   certs: 'Trophy', schedule: 'Calendar',
 };
 
-const PORTAL_ICONS = { driver: 'Bus', trainer: 'GraduationCap', admin: 'Settings' };
-
-export default function Sidebar({ portal, view, onPortal, onView }) {
-  const currentPortal = PORTALS.find(p => p.id === portal);
-
+export default function Sidebar({ portal, view, onView, user, onLogout }) {
   return (
     <aside className="sidebar">
       {/* Logo */}
@@ -30,28 +26,17 @@ export default function Sidebar({ portal, view, onPortal, onView }) {
         </div>
       </div>
 
-      {/* Portal Switcher */}
-      <div className="sb-portal-switch">
-        {PORTALS.map(p => (
-          <button
-            key={p.id}
-            className={`portal-btn${portal === p.id ? ' active' : ''}`}
-            onClick={() => onPortal(p.id)}
-          >
-            <div className="p-icon">
-              <Icon name={PORTAL_ICONS[p.id]} size={14} strokeWidth={2} />
-            </div>
-            <span className="p-label">{p.label}</span>
-            <div className="p-check">
-              <Icon name="Check" size={9} color="#fff" strokeWidth={3} />
-            </div>
-          </button>
-        ))}
+      {/* Portal label */}
+      <div style={{ padding:'10px 16px 8px' }}>
+        <span className={`tb-badge ${portal === 'admin' ? 'blue' : portal === 'trainer' ? 'teal' : 'amber'}`}
+          style={{ fontSize:10, padding:'4px 10px' }}>
+          {portal === 'admin' ? 'Admin Portal' : portal === 'trainer' ? 'Trainer Portal' : 'Driver Portal'}
+        </span>
       </div>
 
       {/* Nav */}
       <nav className="sb-nav">
-        {NAV[portal].map(section => (
+        {(NAV[portal] || []).map(section => (
           <div key={section.section} className="sb-section">
             <div className="sb-section-label">{section.section}</div>
             {section.items.map(item => (
@@ -68,25 +53,30 @@ export default function Sidebar({ portal, view, onPortal, onView }) {
                   />
                 </span>
                 <span className="nav-label">{item.label}</span>
-                {item.badge && (
-                  <span className="nav-badge">{item.badge}</span>
-                )}
+                {item.badge && <span className="nav-badge">{item.badge}</span>}
               </div>
             ))}
           </div>
         ))}
       </nav>
 
-      {/* User */}
+      {/* User + Logout */}
       <div className="sb-user">
-        <div className="sb-avatar">
-          {currentPortal?.avatar}
-        </div>
+        <div className="sb-avatar">{user?.avatar || 'U'}</div>
         <div className="sb-user-info">
-          <div className="sb-user-name">{currentPortal?.name}</div>
-          <div className="sb-user-role">{currentPortal?.label}</div>
+          <div className="sb-user-name">{user?.name || 'User'}</div>
+          <div className="sb-user-role">{user?.role || ''}</div>
         </div>
-        <Icon name="LogOut" size={14} color="var(--text3)" />
+        <button onClick={onLogout} title="Sign out" style={{
+          background:'none', border:'none', cursor:'pointer',
+          color:'var(--text3)', display:'flex', padding:4, borderRadius:'var(--r)',
+          transition:'all 0.15s',
+        }}
+          onMouseEnter={e => e.currentTarget.style.color = 'var(--red)'}
+          onMouseLeave={e => e.currentTarget.style.color = 'var(--text3)'}
+        >
+          <Icon name="LogOut" size={15} />
+        </button>
       </div>
     </aside>
   );
