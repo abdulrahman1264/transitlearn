@@ -3,35 +3,45 @@ import { NAV } from '../data/mockData';
 import Icon from './Icons';
 
 const NAV_ICONS = {
-  dashboard: 'Home', drivers: 'Users', trainers: 'GraduationCap',
-  depots: 'Building', drm: 'Key', reports: 'BarChart', audit: 'Audit',
-  settings: 'Settings', courses: 'Book', quizbank: 'Pencil',
-  media: 'Media', mydrivers: 'Users', assign: 'ClipBoard',
-  btw: 'Car', analytics: 'Analytics', mycourses: 'Book',
-  progress: 'BarChart', quiz: 'Pencil', btwlog: 'Car',
-  certs: 'Trophy', schedule: 'Calendar',
+  dashboard:'Home',    drivers:'Users',       trainers:'GraduationCap',
+  depots:'Building',   drm:'Key',             reports:'BarChart',
+  audit:'Audit',       settings:'Settings',   courses:'Book',
+  quizbank:'Pencil',   media:'Media',         mydrivers:'Users',
+  assign:'ClipBoard',  btw:'Car',             analytics:'Analytics',
+  mycourses:'Book',    progress:'BarChart',   quiz:'Pencil',
+  btwlog:'Car',        certs:'Trophy',        schedule:'Calendar',
+  usermgmt:'UserCheck',
+};
+
+const PORTAL_COLOR = {
+  admin:'blue', trainer:'teal', driver:'amber',
+};
+
+const PORTAL_LABEL = {
+  admin:'Admin Portal', trainer:'Trainer Portal', driver:'Driver Portal',
 };
 
 export default function Sidebar({ portal, view, onView, user, onLogout }) {
+  const color = PORTAL_COLOR[portal] || 'blue';
+
   return (
     <aside className="sidebar">
+
       {/* Logo */}
       <div className="sb-logo">
-        <div className="sb-logo-mark">
-          <Icon name="Bus" size={18} color="#fff" strokeWidth={2} />
+        <div className="sb-logo-icon">
+          <Icon name="Bus" size={18} color="#fff" strokeWidth={2}/>
         </div>
-        <div className="sb-logo-text">
-          <strong>TransitLearn</strong>
-          <span>Training Platform</span>
+        <div>
+          <div className="sb-logo-name">TransitLearn</div>
+          <div className="sb-logo-sub">Training Platform</div>
         </div>
       </div>
 
-      {/* Portal label */}
-      <div style={{ padding:'10px 16px 8px' }}>
-        <span className={`tb-badge ${portal === 'admin' ? 'blue' : portal === 'trainer' ? 'teal' : 'amber'}`}
-          style={{ fontSize:10, padding:'4px 10px' }}>
-          {portal === 'admin' ? 'Admin Portal' : portal === 'trainer' ? 'Trainer Portal' : 'Driver Portal'}
-        </span>
+      {/* Portal pill */}
+      <div className={`sb-portal-pill ${color}`}>
+        <div className="sb-portal-dot"/>
+        <span className="sb-portal-label">{PORTAL_LABEL[portal]}</span>
       </div>
 
       {/* Nav */}
@@ -53,29 +63,26 @@ export default function Sidebar({ portal, view, onView, user, onLogout }) {
                   />
                 </span>
                 <span className="nav-label">{item.label}</span>
-                {item.badge && <span className="nav-badge">{item.badge}</span>}
+                {item.badge && (
+                  <span className="nav-badge">{item.badge}</span>
+                )}
               </div>
             ))}
           </div>
         ))}
       </nav>
 
-      {/* User + Logout */}
+      {/* User */}
       <div className="sb-user">
-        <div className="sb-avatar">{user?.avatar || 'U'}</div>
-        <div className="sb-user-info">
+        <div className={`sb-avatar ${color}`}>
+          {user?.avatar || 'U'}
+        </div>
+        <div style={{ flex:1, minWidth:0 }}>
           <div className="sb-user-name">{user?.name || 'User'}</div>
           <div className="sb-user-role">{user?.role || ''}</div>
         </div>
-        <button onClick={onLogout} title="Sign out" style={{
-          background:'none', border:'none', cursor:'pointer',
-          color:'var(--text3)', display:'flex', padding:4, borderRadius:'var(--r)',
-          transition:'all 0.15s',
-        }}
-          onMouseEnter={e => e.currentTarget.style.color = 'var(--red)'}
-          onMouseLeave={e => e.currentTarget.style.color = 'var(--text3)'}
-        >
-          <Icon name="LogOut" size={15} />
+        <button className="sb-logout" onClick={onLogout} title="Sign out">
+          <Icon name="LogOut" size={14}/>
         </button>
       </div>
     </aside>
