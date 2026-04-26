@@ -175,9 +175,21 @@ export default function CertificatesPage({ portal, user }) {
   // ── DRIVER VIEW ───────────────────────────────────────────────
   if (isDriver) {
     const driverInfo = {
-      name: user?.name || 'Marcus Okafor',
-      emp:  user?.emp  || 'D-10421',
+      name:       user?.name       || 'Marcus Okafor',
+      emp:        user?.emp        || 'D-10421',
+      categoryId: user?.categoryId || 'pre-service',
+      batch:      user?.batch      || 'Batch 153',
     };
+
+    // ── Show ONLY this driver's own category ──────────────────
+    const myCategories = CATEGORIES.filter(c => c.id === driverInfo.categoryId);
+    const myCat        = myCategories[0];
+    const { avgProg, completed, started, progs } = myCat
+      ? getCategoryStatus(myCat, COURSE_PROGS)
+      : { avgProg:0, completed:false, started:false, progs:[] };
+    const myCourses = myCat
+      ? COURSES.filter(c => myCat.courseIds.includes(c.id))
+      : [];
 
     return (
       <div className="fade-in">
@@ -199,30 +211,32 @@ export default function CertificatesPage({ portal, user }) {
         {/* Header */}
         <div style={{ marginBottom:28 }}>
           <div style={{ fontSize:20, fontWeight:800, color:'var(--text)', letterSpacing:'-0.4px', marginBottom:4 }}>
-            My Certificates
+            My Certificate
           </div>
           <div style={{ fontSize:13, color:'var(--text3)' }}>
-            Complete all courses in a category to earn your certificate
+            {completed
+              ? '🎉 Congratulations! Your certificate is ready to download.'
+              : 'Complete your training to earn your certificate'
+            }
           </div>
         </div>
 
-        {/* How it works banner */}
-        <div style={{
-          background:'var(--brand-dim)', border:'1px solid rgba(27,110,243,0.15)',
-          borderRadius:'var(--r3)', padding:'16px 20px',
-          display:'flex', alignItems:'center', gap:16, marginBottom:28,
-        }}>
-          <Icon name="Info" size={16} color="var(--brand)"/>
-          <div style={{ fontSize:13, color:'var(--text2)', lineHeight:1.55 }}>
-            <strong style={{ color:'var(--text)' }}>How certificates work:</strong>{' '}
-            Complete 100% of all courses in a training category →
-            Your certificate is automatically generated and ready to download instantly.
+        {/* If no category found */}
+        {!myCat && (
+          <div style={{
+            background:'var(--bg2)', border:'1.5px dashed var(--border2)',
+            borderRadius:'var(--r3)', padding:'48px', textAlign:'center',
+          }}>
+            <div style={{ fontSize:48, marginBottom:12 }}>📋</div>
+            <div style={{ fontSize:15, fontWeight:700, color:'var(--text)', marginBottom:8 }}>No Training Assigned</div>
+            <div style={{ fontSize:13, color:'var(--text3)' }}>Contact your trainer to get assigned to a training category.</div>
           </div>
-        </div>
+        )}
 
-        {/* 3 Category Certificate Cards */}
-        <div style={{ display:'flex', flexDirection:'column', gap:16 }}>
-          {CATEGORIES.map(cat => {
+        {/* Single category card */}
+        {myCat && (
+          <div style={{ display:'flex', flexDirection:'column', gap:16 }}>
+          {myCategories.map(cat => {
             const { avgProg, completed, started, progs } = getCategoryStatus(cat, COURSE_PROGS);
             const catCourses = COURSES.filter(c => cat.courseIds.includes(c.id));
 
@@ -403,7 +417,8 @@ export default function CertificatesPage({ portal, user }) {
               </div>
             );
           })}
-        </div>
+          </div>
+        )}
       </div>
     );
   }

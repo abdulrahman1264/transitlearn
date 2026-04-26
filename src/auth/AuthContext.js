@@ -4,13 +4,24 @@ const AuthContext = createContext(null);
 
 export const USERS = {
   admin: [
-    { email:'Admin', password:'admin123', name:'Admin User', avatar:'AU', role:'Platform Administrator' },
+    { email:'Admin',   password:'admin123',   name:'Admin User',   avatar:'AU', role:'Platform Administrator' },
   ],
   trainer: [
-    { email:'Trainer', password:'trainer123', name:'Elena Marsh', avatar:'EM', role:'Senior Trainer' },
+    { email:'Trainer', password:'trainer123', name:'Elena Marsh',  avatar:'EM', role:'Senior Trainer'         },
   ],
   driver: [
-    { email:'Driver', password:'driver123', name:'Marcus Okafor', avatar:'MO', role:'Bus Driver — Central' },
+    {
+      email:    'Driver',
+      password: 'driver123',
+      name:     'Marcus Okafor',
+      avatar:   'MO',
+      role:     'Bus Driver — Central',
+      emp:      'D-10421',
+      category: 'Public Bus — Pre Service',
+      categoryId:'pre-service',
+      batch:    'Batch 153',
+      depot:    'Central',
+    },
   ],
 };
 
