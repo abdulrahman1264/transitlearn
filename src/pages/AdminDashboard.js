@@ -367,10 +367,9 @@ export default function AdminDashboard({ onView }) {
       {/* Tabs */}
       <div className="tabs" style={{ marginBottom:24 }}>
         {[
-          { key:'overview',      icon:'Home',      label:'Overview'           },
-          { key:'video-progress',icon:'Video',     label:'Video Progress'     },
-          { key:'categories',    icon:'Layers',    label:'Categories'         },
-          { key:'registrations', icon:'UserCheck', label:'New Registrations', badge: pendingCount },
+          { key:'overview',      icon:'Home',    label:'Overview'       },
+          { key:'video-progress',icon:'Video',   label:'Video Progress' },
+          { key:'categories',    icon:'Layers',  label:'Categories'     },
         ].map(t=>(
           <button key={t.key} className={`tab ${activeTab===t.key?'active':''}`}
             onClick={()=>setActiveTab(t.key)}
@@ -595,11 +594,6 @@ export default function AdminDashboard({ onView }) {
             })}
           </div>
         </div>
-      )}
-
-      {/* ── NEW REGISTRATIONS ── */}
-      {activeTab === 'registrations' && (
-        <NewRegistrations registrations={registrations} onApprove={approveDriver} onReject={rejectDriver}/>
       )}
 
     </div>
