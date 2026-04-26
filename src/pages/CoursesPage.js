@@ -371,7 +371,7 @@ function ModuleItem({ mod, idx, onUpdate, onDelete, onMoveUp, isFirst }) {
                     </div>
                   ) : (
                     <div>
-                      <Icon name="Upload" size:18 color="var(--text3)"/>
+                      <Icon name="Upload" size={18} color="var(--text3)"/>
                       <div style={{ fontSize:13, fontWeight:600, color:'var(--text2)', marginTop:6 }}>
                         Click to upload MP4 video
                       </div>
