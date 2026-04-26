@@ -127,7 +127,7 @@ function QuizBuilder({ questions, onChange }) {
           <Icon name="Plus" size={12}/> Add Question
         </button>
       </div>
-    </div>
+      </div>
   );
 }
 
@@ -196,7 +196,7 @@ function AddQuestionInline({ onAdd, accentColor }) {
           Cancel
         </button>
       </div>
-    </div>
+      </div>
   );
 }
 
@@ -221,9 +221,10 @@ function ModuleItem({ mod, idx, onUpdate, onDelete, onMoveUp, isFirst }) {
   };
 
   const typeConfig = {
-    video: { color:'var(--blue)',  dim:'var(--blue-dim)',  icon:'Video',    label:'Video' },
-    pdf:   { color:'var(--red)',   dim:'var(--red-dim)',   icon:'FileText', label:'PDF'   },
-    quiz:  { color:'var(--amber)', dim:'var(--amber-dim)', icon:'Pencil',   label:'Quiz'  },
+    video: { color:'var(--blue)',   dim:'var(--blue-dim)',   icon:'Video',    label:'Video'  },
+    pdf:   { color:'var(--red)',    dim:'var(--red-dim)',    icon:'FileText', label:'PDF'    },
+    pptx:  { color:'var(--purple)', dim:'var(--purple-dim)', icon:'Layers',   label:'Slides' },
+    quiz:  { color:'var(--amber)',  dim:'var(--amber-dim)',  icon:'Pencil',   label:'Quiz'   },
   };
   const tc = typeConfig[mod.type] || typeConfig.video;
 
@@ -325,7 +326,7 @@ function ModuleItem({ mod, idx, onUpdate, onDelete, onMoveUp, isFirst }) {
             <div>
               <label className="form-label">Type</label>
               <div style={{ display:'flex', gap:5 }}>
-                {['video','pdf','quiz'].map(t => {
+                {['video','pdf','pptx','quiz'].map(t => {
                   const tc2 = typeConfig[t];
                   return (
                     <button key={t}
@@ -505,8 +506,130 @@ function ModuleItem({ mod, idx, onUpdate, onDelete, onMoveUp, isFirst }) {
               )}
             </div>
           )}
+{/* ── PPTX ──────────────────────────── */}
+          {mod.type === 'pptx' && (
+            <div style={{ padding:'16px' }}>
+              <div className="form-group">
+                <label className="form-label">PowerPoint File (.pptx)</label>
+                <div
+                  onClick={() => fileRef.current.click()}
+                  style={{
+                    border:`2px dashed ${mod.file ? 'var(--green)' : 'var(--border2)'}`,
+                    borderRadius:'var(--r2)', padding:'16px',
+                    textAlign:'center', cursor:'pointer',
+                    background: mod.file ? 'var(--green-dim)' : 'var(--bg3)',
+                    transition:'all 0.15s',
+                  }}
+                >
+                  {mod.file ? (
+                    <div style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:10 }}>
+                      <Icon name="Check" size={16} color="var(--green)"/>
+                      <span style={{ fontSize:13, fontWeight:600, color:'var(--green)' }}>{mod.file}</span>
+                      <span style={{ fontSize:11, color:'var(--text3)' }}>· Click to replace</span>
+                    </div>
+                  ) : (
+                    <div>
+                      <Icon name="Layers" size={18} color="var(--text3)"/>
+                      <div style={{ fontSize:13, fontWeight:600, color:'var(--text2)', marginTop:6 }}>
+                        Click to upload PowerPoint
+                      </div>
+                      <div style={{ fontSize:11, color:'var(--text3)', marginTop:4 }}>
+                        .pptx or .ppt · Max 200MB
+                      </div>
+                    </div>
+                  )}
+                  <input ref={fileRef} type="file" accept=".pptx,.ppt"
+                    style={{ display:'none' }} onChange={handleFile}/>
+                </div>
+              </div>
 
-          {/* ── QUIZ ──────────────────────── */}
+              {/* Slide previewer */}
+              {mod.file && (
+                <div>
+                  <label className="form-label">
+                    <Icon name="Layers" size={11} color="var(--purple)"/> Slide Preview
+                  </label>
+                  <div style={{
+                    background:'linear-gradient(135deg,#1E0A3C,#2D1B69)',
+                    borderRadius:'var(--r2)', padding:'24px',
+                    border:'1px solid rgba(124,58,237,0.3)',
+                    position:'relative',
+                  }}>
+                    <div style={{ position:'absolute', top:10, right:12, background:'rgba(255,255,255,0.1)', color:'rgba(255,255,255,0.6)', fontSize:9, fontFamily:'var(--font-mono)', padding:'3px 8px', borderRadius:4 }}>
+                      PowerPoint · .pptx
+                    </div>
+                    <div style={{ textAlign:'center', marginBottom:20 }}>
+                      <div style={{ fontSize:32, marginBottom:6 }}>📊</div>
+                      <div style={{ fontSize:14, fontWeight:700, color:'#fff', marginBottom:4 }}>{mod.title || 'Presentation'}</div>
+                      <div style={{ fontSize:11, color:'rgba(255,255,255,0.5)', fontFamily:'var(--font-mono)' }}>{mod.file}</div>
+                    </div>
+                    {/* Slide thumbnails */}
+                    <div style={{ display:'flex', gap:8, justifyContent:'center', marginBottom:16 }}>
+                      {[1,2,3,4,5].map(n=>(
+                        <div key={n} style={{
+                          width:80, height:52,
+                          background: n===1 ? 'rgba(255,255,255,0.18)' : 'rgba(255,255,255,0.07)',
+                          border: n===1 ? '2px solid rgba(255,255,255,0.4)' : '1px solid rgba(255,255,255,0.12)',
+                          borderRadius:5,
+                          display:'flex', alignItems:'center', justifyContent:'center',
+                          fontSize:10, fontWeight:600,
+                          color: n===1 ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.3)',
+                          flexShrink:0,
+                          cursor:'pointer',
+                        }}>
+                          {n}
+                        </div>
+                      ))}
+                      <div style={{
+                        width:80, height:52,
+                        background:'rgba(255,255,255,0.04)',
+                        border:'1px dashed rgba(255,255,255,0.15)',
+                        borderRadius:5,
+                        display:'flex', alignItems:'center', justifyContent:'center',
+                        fontSize:10, color:'rgba(255,255,255,0.25)',
+                        flexShrink:0,
+                      }}>
+                        +more
+                      </div>
+                    </div>
+                    {/* Slide nav */}
+                    <div style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:12 }}>
+                      <button style={{ background:'rgba(255,255,255,0.12)', border:'1px solid rgba(255,255,255,0.2)', color:'#fff', borderRadius:6, padding:'5px 14px', cursor:'pointer', fontSize:12, fontWeight:600 }}>
+                        ‹ Prev
+                      </button>
+                      <span style={{ fontSize:11, color:'rgba(255,255,255,0.5)', fontFamily:'var(--font-mono)' }}>
+                        Slide 1 of 5
+                      </span>
+                      <button style={{ background:'rgba(255,255,255,0.12)', border:'1px solid rgba(255,255,255,0.2)', color:'#fff', borderRadius:6, padding:'5px 14px', cursor:'pointer', fontSize:12, fontWeight:600 }}>
+                        Next ›
+                      </button>
+                    </div>
+                  </div>
+                  <div style={{ marginTop:6, fontSize:11, color:'var(--text3)', display:'flex', alignItems:'center', gap:5 }}>
+                    <Icon name="Info" size={11} color="var(--text3)"/>
+                    Drivers will be able to flip through slides in their course view
+                  </div>
+                </div>
+              )}
+
+              {!mod.file && (
+                <div style={{
+                  background:'linear-gradient(135deg,#1E0A3C,#2D1B69)',
+                  borderRadius:'var(--r2)', height:140,
+                  display:'flex', flexDirection:'column',
+                  alignItems:'center', justifyContent:'center',
+                  border:'1px solid rgba(124,58,237,0.2)',
+                }}>
+                  <div style={{ fontSize:32, marginBottom:8 }}>📊</div>
+                  <div style={{ fontSize:13, color:'rgba(255,255,255,0.5)', fontWeight:600 }}>
+                    Upload a .pptx to preview slides
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* ── QUIZ ──────────────────────────── */}
           {mod.type === 'quiz' && (
             <div style={{ padding:'16px' }}>
               <label className="form-label">
@@ -869,7 +992,7 @@ function CourseEditor({ course, onSave, onBack }) {
           </div>
         </div>
       </div>
-    </div>
+      </div>
   );
 }
 
@@ -1103,7 +1226,7 @@ function CoursePreview({ course, onBack, onEdit }) {
           </div>
         </div>
       </div>
-    </div>
+      </div>
   );
 }
 
@@ -1381,6 +1504,6 @@ export default function CoursesPage() {
           );
         })}
       </div>
-    </div>
+      </div>
   );
 }

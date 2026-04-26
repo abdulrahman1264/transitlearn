@@ -55,7 +55,9 @@ function CourseReviewModal({ course, onClose, onApprove, onReject }) {
 
   const typeColor = { video:'var(--blue)', pdf:'var(--red)', quiz:'var(--amber)' };
   const typeDim   = { video:'var(--blue-dim)', pdf:'var(--red-dim)', quiz:'var(--amber-dim)' };
-  const typeIcon  = { video:'Video', pdf:'FileText', quiz:'Pencil' };
+  const typeIcon  = { video:'Video', pdf:'FileText', pptx:'Layers', quiz:'Pencil' };
+  const typeColor2 = { video:'var(--blue)', pdf:'var(--red)', pptx:'var(--purple)', quiz:'var(--amber)' };
+  const typeDim2   = { video:'var(--blue-dim)', pdf:'var(--red-dim)', pptx:'var(--purple-dim)', quiz:'var(--amber-dim)' };
 
   return (
     <div style={{
