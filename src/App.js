@@ -24,6 +24,8 @@ import TrainerDriversPage from './pages/TrainerDriversPage';
 import AdminCoursesPage from './pages/AdminCoursesPage';
 import AdminProfile     from './pages/AdminProfile';
 import QuizBankPage       from './pages/QuizBankPage';
+import TrainersPage from './pages/TrainersPage';
+import DepotsPage   from './pages/DepotsPage';
 import TrainerProfile     from './pages/TrainerProfile';
 
 function AppInner() {
@@ -50,17 +52,18 @@ function AppInner() {
   // ── Logged in ─────────────────────────────────
   const renderPage = () => {
     if (authPortal === 'admin') {
-      if (view === 'dashboard') return <AdminDashboard onView={setView}/>;
-      if (view === 'courses')   return <AdminCoursesPage/>;
-      if (view === 'drivers')   return <DriversPage/>;
-      if (view === 'usermgmt')  return <UserMgmtPage/>;
-      if (view === 'drm')       return <DrmPage/>;
-      if (view === 'reports')   return <ReportsPage/>;
-      if (view === 'audit')     return <AuditPage/>;
-      if (view === 'settings')  return <SettingsPage/>;
-      if (view === 'analytics') return <AnalyticsPage/>;
-      if (view === 'certs')     return <CertificatesPage/>;
-      if (view === 'courses')   return <AdminCoursesPage/>;
+      if (view === 'dashboard')    return <AdminDashboard onView={setView}/>;
+      if (view === 'courses')      return <AdminCoursesPage/>;
+      if (view === 'drivers')      return <DriversPage/>;
+      if (view === 'trainers')     return <TrainersPage/>;
+      if (view === 'usermgmt')     return <UserMgmtPage/>;
+      if (view === 'depots')       return <DepotsPage/>;
+      if (view === 'drm')          return <DrmPage/>;
+      if (view === 'reports')      return <ReportsPage/>;
+      if (view === 'audit')        return <AuditPage/>;
+      if (view === 'settings')     return <SettingsPage/>;
+      if (view === 'analytics')    return <AnalyticsPage/>;
+      if (view === 'certs')        return <CertificatesPage portal="admin" user={user}/>;
       if (view === 'adminprofile') return <AdminProfile user={user}/>;
     }
     if (authPortal === 'trainer') {
@@ -72,15 +75,12 @@ function AppInner() {
       if (view === 'trainerprofile') return <TrainerProfile user={user}/>;
     }
     if (authPortal === 'driver') {
-      if (view === 'mycourses') return <MyCourses/>;
-      if (view === 'progress')  return <DriverDashboard onView={setView}/>;
+      if (view === 'mycourses') return <MyCourses user={user}/>;
+      if (view === 'progress')  return <DriverDashboard onView={setView} user={user}/>;
       if (view === 'quiz')      return <QuizPage/>;
-      if (view === 'btwlog')    return <BtwPage portal="driver" user={user}/>;
       if (view === 'certs')     return <CertificatesPage portal="driver" user={user}/>;
       if (view === 'schedule')  return <GenericPage view={view}/>;
-      if (view === 'certs')     return <CertificatesPage portal="admin" user={user}/>;
-      if (view === 'trainers')  return <GenericPage view={view}/>;
-      if (view === 'depots')    return <GenericPage view={view}/>;
+      if (view === 'profile')   return <GenericPage view={view}/>;
     }
     return <GenericPage view={view}/>;
   };
