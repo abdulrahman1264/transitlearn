@@ -21,6 +21,8 @@ import AnalyticsPage    from './pages/AnalyticsPage';
 import CertificatesPage from './pages/CertificatesPage';
 import MediaUploadPage    from './pages/MediaUploadPage';
 import TrainerDriversPage from './pages/TrainerDriversPage';
+import QuizBankPage       from './pages/QuizBankPage';
+import TrainerProfile     from './pages/TrainerProfile';
 
 function AppInner() {
   const { user, portal: authPortal, logout } = useAuth();
@@ -57,10 +59,12 @@ function AppInner() {
       if (view === 'certs')     return <CertificatesPage/>;
     }
     if (authPortal === 'trainer') {
-      if (view === 'courses')   return <CoursesPage/>;
-      if (view === 'media')     return <MediaUploadPage/>;
-      if (view === 'mydrivers') return <TrainerDriversPage user={user}/>;
-      if (view === 'btw')       return <BtwPage portal="trainer" user={user}/>;
+      if (view === 'courses')        return <CoursesPage/>;
+      if (view === 'media')          return <MediaUploadPage/>;
+      if (view === 'quizbank')       return <QuizBankPage/>;
+      if (view === 'mydrivers')      return <TrainerDriversPage user={user}/>;
+      if (view === 'btw')            return <BtwPage portal="trainer" user={user}/>;
+      if (view === 'trainerprofile') return <TrainerProfile user={user}/>;
     }
     if (authPortal === 'driver') {
       if (view === 'mycourses') return <MyCourses/>;

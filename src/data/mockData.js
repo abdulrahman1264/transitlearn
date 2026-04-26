@@ -18,12 +18,16 @@ export const NAV = {
   ],
   trainer: [
     { section:'Content', items:[
-      { id:'courses',   icon:'Book',      label:'Course Builder'  },
-      { id:'media',     icon:'Upload',    label:'Media Upload'    },
+      { id:'courses',   icon:'Book',      label:'Course Builder'        },
+      { id:'media',     icon:'Upload',    label:'Media Library'         },
+      { id:'quizbank',  icon:'Pencil',    label:'Quiz Bank'             },
     ]},
     { section:'My Drivers', items:[
-      { id:'mydrivers', icon:'Users',     label:'My Drivers', badge:3 },
-      { id:'btw',       icon:'Car',       label:'BTW Sessions'   },
+      { id:'mydrivers', icon:'Users',     label:'My Drivers',  badge:3  },
+      { id:'btw',       icon:'Car',       label:'BTW Sessions'          },
+    ]},
+    { section:'Account', items:[
+      { id:'trainerprofile', icon:'Users', label:'My Profile'           },
     ]},
   ],
   admin: [
@@ -55,9 +59,11 @@ export const TOPBAR_TITLES = {
   depots:     'Depots & Routes',
   courses:    'Course Builder',
   quizbank:   'Quiz Bank',
-  media:      'Media Upload',
-  mydrivers:  'My Drivers',
-  btw:        'BTW Sessions',
+  media:          'Media Library',
+  quizbank:       'Quiz Bank',
+  mydrivers:      'My Drivers',
+  btw:            'BTW Sessions',
+  trainerprofile: 'My Profile',
   mycourses:  'My Courses',
   progress:   'My Progress',
   quiz:       'Quizzes',
