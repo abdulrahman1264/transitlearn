@@ -32,11 +32,12 @@ export const NAV = {
   ],
   admin: [
     { section:'Platform', items:[
-      { id:'dashboard', icon:'Home',         label:'Dashboard'        },
-      { id:'drivers',   icon:'Users',        label:'All Drivers', badge:7 },
-      { id:'trainers',  icon:'GraduationCap',label:'Trainers'         },
-      { id:'usermgmt',  icon:'UserCheck',    label:'User Management'  },
-      { id:'depots',    icon:'Building',     label:'Depots & Routes'  },
+      { id:'dashboard',  icon:'Home',          label:'Dashboard'              },
+      { id:'courses',    icon:'Book',          label:'Course Approvals', badge:1 },
+      { id:'drivers',    icon:'Users',         label:'All Drivers',  badge:7  },
+      { id:'trainers',   icon:'GraduationCap', label:'Trainers'               },
+      { id:'usermgmt',   icon:'UserCheck',     label:'User Management'        },
+      { id:'depots',     icon:'Building',      label:'Depots & Routes'        },
     ]},
     { section:'System', items:[
       { id:'drm',      icon:'Key',      label:'DRM Keys'   },

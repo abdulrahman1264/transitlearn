@@ -21,6 +21,7 @@ import AnalyticsPage    from './pages/AnalyticsPage';
 import CertificatesPage from './pages/CertificatesPage';
 import MediaUploadPage    from './pages/MediaUploadPage';
 import TrainerDriversPage from './pages/TrainerDriversPage';
+import AdminCoursesPage from './pages/AdminCoursesPage';
 import QuizBankPage       from './pages/QuizBankPage';
 import TrainerProfile     from './pages/TrainerProfile';
 
@@ -49,6 +50,7 @@ function AppInner() {
   const renderPage = () => {
     if (authPortal === 'admin') {
       if (view === 'dashboard') return <AdminDashboard onView={setView}/>;
+      if (view === 'courses')   return <AdminCoursesPage/>;
       if (view === 'drivers')   return <DriversPage/>;
       if (view === 'usermgmt')  return <UserMgmtPage/>;
       if (view === 'drm')       return <DrmPage/>;
@@ -57,6 +59,7 @@ function AppInner() {
       if (view === 'settings')  return <SettingsPage/>;
       if (view === 'analytics') return <AnalyticsPage/>;
       if (view === 'certs')     return <CertificatesPage/>;
+      if (view === 'courses')   return <AdminCoursesPage/>;
     }
     if (authPortal === 'trainer') {
       if (view === 'courses')        return <CoursesPage/>;
