@@ -19,6 +19,8 @@ import UserMgmtPage    from './pages/UserMgmtPage';
 import SettingsPage     from './pages/SettingsPage';
 import AnalyticsPage    from './pages/AnalyticsPage';
 import CertificatesPage from './pages/CertificatesPage';
+import MediaUploadPage    from './pages/MediaUploadPage';
+import TrainerDriversPage from './pages/TrainerDriversPage';
 
 function AppInner() {
   const { user, portal: authPortal, logout } = useAuth();
@@ -56,9 +58,9 @@ function AppInner() {
     }
     if (authPortal === 'trainer') {
       if (view === 'courses')   return <CoursesPage/>;
-      if (view === 'mydrivers') return <DriversPage/>;
-      if (view === 'btw')       return <BtwPage portal="trainer"/>;
-      if (view === 'analytics') return <AnalyticsPage/>;
+      if (view === 'media')     return <MediaUploadPage/>;
+      if (view === 'mydrivers') return <TrainerDriversPage user={user}/>;
+      if (view === 'btw')       return <BtwPage portal="trainer" user={user}/>;
     }
     if (authPortal === 'driver') {
       if (view === 'mycourses') return <MyCourses/>;
@@ -67,6 +69,9 @@ function AppInner() {
       if (view === 'btwlog')    return <BtwPage portal="driver" user={user}/>;
       if (view === 'certs')     return <CertificatesPage portal="driver" user={user}/>;
       if (view === 'schedule')  return <GenericPage view={view}/>;
+      if (view === 'certs')     return <CertificatesPage portal="admin" user={user}/>;
+      if (view === 'trainers')  return <GenericPage view={view}/>;
+      if (view === 'depots')    return <GenericPage view={view}/>;
     }
     return <GenericPage view={view}/>;
   };
