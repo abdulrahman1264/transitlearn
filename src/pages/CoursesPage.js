@@ -131,54 +131,129 @@ function QuizBuilder({ questions, onChange }) {
   );
 }
 
+// ── Inline question adder ─────────────────────────────────────────
+function AddQuestionInline({ onAdd, accentColor }) {
+  const [open,    setOpen]    = useState(false);
+  const [q,       setQ]       = useState('');
+  const [opts,    setOpts]    = useState(['','','','']);
+  const [correct, setCorrect] = useState(0);
+
+  const submit = () => {
+    if (!q.trim() || opts.some(o => !o.trim())) return;
+    onAdd({ q, opts, correct });
+    setQ(''); setOpts(['','','','']); setCorrect(0); setOpen(false);
+  };
+
+  if (!open) return (
+    <button onClick={() => setOpen(true)} style={{
+      width:'100%', padding:'10px',
+      border:`2px dashed ${accentColor}44`,
+      borderRadius:'var(--r)', background:`${accentColor}08`,
+      color: accentColor, fontSize:13, fontWeight:600,
+      cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', gap:6,
+    }}>
+      <Icon name="Plus" size={13} color={accentColor}/> Add Question
+    </button>
+  );
+
+  return (
+    <div style={{
+      background:'var(--bg2)', borderRadius:'var(--r2)',
+      padding:'14px', border:`1.5px solid ${accentColor}44`,
+    }}>
+      <div className="form-group">
+        <label className="form-label">Question</label>
+        <textarea className="form-input" style={{ minHeight:60 }}
+          placeholder="Type your question..."
+          value={q} onChange={e => setQ(e.target.value)}/>
+      </div>
+      <div className="form-group">
+        <label className="form-label">Options (click circle = correct answer)</label>
+        {opts.map((opt, i) => (
+          <div key={i} style={{ display:'flex', alignItems:'center', gap:8, marginBottom:7 }}>
+            <div onClick={() => setCorrect(i)} style={{
+              width:20, height:20, borderRadius:'50%', cursor:'pointer', flexShrink:0,
+              border:`2px solid ${correct===i ? accentColor : 'var(--border2)'}`,
+              background: correct===i ? accentColor : 'transparent',
+              display:'flex', alignItems:'center', justifyContent:'center',
+              transition:'all 0.13s',
+            }}>
+              {correct===i && <Icon name="Check" size={10} color="#fff" strokeWidth={3}/>}
+            </div>
+            <input className="form-input"
+              placeholder={`Option ${i+1}${correct===i?' — Correct':''}`}
+              value={opt}
+              onChange={e => { const o=[...opts]; o[i]=e.target.value; setOpts(o); }}
+            />
+          </div>
+        ))}
+      </div>
+      <div style={{ display:'flex', gap:8 }}>
+        <button className="btn btn-primary btn-sm" onClick={submit}>
+          <Icon name="Check" size={11}/> Add Question
+        </button>
+        <button className="btn btn-ghost btn-sm" onClick={() => setOpen(false)}>
+          Cancel
+        </button>
+      </div>
+    </div>
+  );
+}
+
 // ── Module Item ───────────────────────────────────────────────────
-function ModuleItem({ mod, idx, onUpdate, onDelete, onMoveUp, onMoveDown, isFirst, isLast }) {
-  const [expanded, setExpanded]   = useState(false);
-  const fileRef                   = useRef();
+function ModuleItem({ mod, idx, onUpdate, onDelete, onMoveUp, isFirst }) {
+  const [expanded, setExpanded] = useState(false);
+  const fileRef                 = useRef();
 
   const handleFile = (e) => {
     const file = e.target.files[0];
     if (!file) return;
+    const url = URL.createObjectURL(file);
     onUpdate(idx, {
       ...mod,
-      file: file.name,
-      dur:  mod.type === 'video'
+      file:    file.name,
+      fileUrl: url,
+      fileObj: file,
+      dur: mod.type === 'video'
         ? `${Math.round(file.size / 1024 / 1024 * 2)} min`
         : `${Math.ceil(file.size / 1024 / 100)} min read`,
     });
   };
 
   const typeConfig = {
-    video: { color:'var(--blue)',   dim:'var(--blue-dim)',   icon:'Video',    label:'Video'    },
-    pdf:   { color:'var(--red)',    dim:'var(--red-dim)',    icon:'FileText', label:'PDF'      },
-    quiz:  { color:'var(--amber)',  dim:'var(--amber-dim)',  icon:'Pencil',   label:'Quiz'     },
+    video: { color:'var(--blue)',  dim:'var(--blue-dim)',  icon:'Video',    label:'Video' },
+    pdf:   { color:'var(--red)',   dim:'var(--red-dim)',   icon:'FileText', label:'PDF'   },
+    quiz:  { color:'var(--amber)', dim:'var(--amber-dim)', icon:'Pencil',   label:'Quiz'  },
   };
   const tc = typeConfig[mod.type] || typeConfig.video;
 
   return (
     <div style={{
-      background:'var(--bg2)', border:'1.5px solid var(--border)',
+      background:'var(--bg2)', border:`1.5px solid ${expanded ? tc.color+'44' : 'var(--border)'}`,
       borderRadius:'var(--r2)', marginBottom:8, overflow:'hidden',
       transition:'all 0.15s',
+      boxShadow: expanded ? `0 4px 16px ${tc.color}18` : 'none',
     }}>
-      {/* Module header */}
+
+      {/* ── Module header ─────────────────── */}
       <div style={{
         display:'flex', alignItems:'center', gap:12,
-        padding:'12px 14px', cursor:'pointer',
+        padding:'11px 14px', cursor:'pointer',
+        background: expanded ? `${tc.color}08` : 'transparent',
       }} onClick={() => setExpanded(e => !e)}>
 
-        {/* Drag handle / number */}
+        {/* Number */}
         <div style={{
           width:26, height:26, borderRadius:7, flexShrink:0,
           background: tc.dim, color: tc.color,
           display:'flex', alignItems:'center', justifyContent:'center',
-          fontSize:11, fontWeight:700, fontFamily:'var(--font-mono)',
+          fontSize:11, fontWeight:700,
         }}>{idx+1}</div>
 
-        {/* Type badge */}
+        {/* Type chip */}
         <div style={{
-          display:'flex', alignItems:'center', gap:5,
-          padding:'3px 9px', borderRadius:6,
+          display:'flex', alignItems:'center', gap:4,
+          padding:'2px 8px', borderRadius:5,
           background: tc.dim, color: tc.color,
           fontSize:10, fontWeight:700, flexShrink:0,
         }}>
@@ -187,21 +262,20 @@ function ModuleItem({ mod, idx, onUpdate, onDelete, onMoveUp, onMoveDown, isFirs
 
         {/* Title */}
         <span style={{ flex:1, fontSize:13.5, fontWeight:600, color:'var(--text)' }}>
-          {mod.title || <span style={{ color:'var(--text3)' }}>Untitled module</span>}
+          {mod.title || <span style={{ color:'var(--text3)', fontStyle:'italic' }}>Untitled module</span>}
         </span>
 
-        {/* Duration */}
+        {/* Status chips */}
         {mod.dur && (
           <span className="chip" style={{ fontSize:10, flexShrink:0 }}>
             <Icon name="Clock" size={9}/> {mod.dur}
           </span>
         )}
-
-        {/* File status */}
         {mod.type !== 'quiz' && (
           <span style={{
             fontSize:10, fontWeight:600, flexShrink:0,
             color: mod.file ? 'var(--green)' : 'var(--text3)',
+            display:'flex', alignItems:'center', gap:3,
           }}>
             {mod.file
               ? <><Icon name="Check" size={10} color="var(--green)" strokeWidth={2.5}/> Uploaded</>
@@ -215,14 +289,13 @@ function ModuleItem({ mod, idx, onUpdate, onDelete, onMoveUp, onMoveDown, isFirs
           </span>
         )}
 
-        {/* Move + Delete */}
+        {/* Controls */}
         <div style={{ display:'flex', gap:4, flexShrink:0 }} onClick={e => e.stopPropagation()}>
           <button disabled={isFirst} onClick={() => onMoveUp(idx)} style={{
-            background:'none', border:'none', cursor: isFirst?'not-allowed':'pointer',
+            background:'none', border:'none',
+            cursor: isFirst ? 'not-allowed' : 'pointer',
             color: isFirst ? 'var(--text4)' : 'var(--text3)', padding:3,
-          }}>
-            <Icon name="BarChart" size={12}/>
-          </button>
+          }}>▲</button>
           <button onClick={() => onDelete(idx)} style={{
             background:'none', border:'none', cursor:'pointer', color:'var(--red)', padding:3,
           }}>
@@ -230,138 +303,271 @@ function ModuleItem({ mod, idx, onUpdate, onDelete, onMoveUp, onMoveDown, isFirs
           </button>
         </div>
 
-        <Icon name={expanded?'X':'ChevronRight'} size={13} color="var(--text3)"/>
+        <span style={{ color:'var(--text3)', fontSize:12, flexShrink:0 }}>
+          {expanded ? '▲' : '▼'}
+        </span>
       </div>
 
-      {/* Expanded editor */}
+      {/* ── Expanded content ──────────────── */}
       {expanded && (
-        <div style={{
-          padding:'14px 16px', borderTop:'1px solid var(--border)',
-          background:'var(--bg3)',
-        }}>
-          {/* Title input */}
-          <div className="form-group">
-            <label className="form-label">Module Title</label>
-            <input className="form-input" placeholder="e.g. Introduction to Safe Driving"
-              value={mod.title}
-              onChange={e => onUpdate(idx, { ...mod, title:e.target.value })}
-            />
-          </div>
+        <div style={{ borderTop:`1px solid ${tc.color}22` }}>
 
-          {/* Type selector */}
-          <div className="form-group">
-            <label className="form-label">Content Type</label>
-            <div style={{ display:'flex', gap:8 }}>
-              {['video','pdf','quiz'].map(t => {
-                const tc2 = typeConfig[t];
-                return (
-                  <button key={t} onClick={() => onUpdate(idx, { ...mod, type:t, file:null, questions:t==='quiz'?[]:(mod.questions||[]) })}
-                    style={{
-                      flex:1, padding:'9px 8px', borderRadius:'var(--r)',
-                      border:`1.5px solid ${mod.type===t ? tc2.color : 'var(--border2)'}`,
-                      background: mod.type===t ? tc2.dim : 'var(--bg2)',
-                      cursor:'pointer', display:'flex', flexDirection:'column',
-                      alignItems:'center', gap:5, transition:'all 0.13s',
-                    }}>
-                    <Icon name={tc2.icon} size={16} color={mod.type===t ? tc2.color : 'var(--text3)'}/>
-                    <span style={{ fontSize:11, fontWeight:700, color:mod.type===t ? tc2.color : 'var(--text3)' }}>
+          {/* Module title + type selector */}
+          <div style={{ padding:'16px 16px 0', display:'grid', gridTemplateColumns:'1fr auto', gap:12 }}>
+            <div className="form-group" style={{ marginBottom:0 }}>
+              <label className="form-label">Module Title</label>
+              <input className="form-input"
+                placeholder="e.g. Introduction to Safe Driving"
+                value={mod.title}
+                onChange={e => onUpdate(idx, { ...mod, title:e.target.value })}
+              />
+            </div>
+            <div>
+              <label className="form-label">Type</label>
+              <div style={{ display:'flex', gap:5 }}>
+                {['video','pdf','quiz'].map(t => {
+                  const tc2 = typeConfig[t];
+                  return (
+                    <button key={t}
+                      onClick={() => onUpdate(idx, { ...mod, type:t, file:null, fileUrl:null, questions:t==='quiz'?[]:(mod.questions||[]) })}
+                      style={{
+                        padding:'6px 10px', borderRadius:6,
+                        border:`1.5px solid ${mod.type===t ? tc2.color : 'var(--border2)'}`,
+                        background: mod.type===t ? tc2.dim : 'var(--bg3)',
+                        cursor:'pointer', display:'flex', alignItems:'center', gap:4,
+                        fontSize:11, fontWeight:600,
+                        color: mod.type===t ? tc2.color : 'var(--text3)',
+                      }}>
+                      <Icon name={tc2.icon} size={12} color={mod.type===t ? tc2.color : 'var(--text3)'}/>
                       {tc2.label}
-                    </span>
-                  </button>
-                );
-              })}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           </div>
 
-          {/* Video upload */}
+          {/* ── VIDEO ─────────────────────── */}
           {mod.type === 'video' && (
-            <div>
-              <label className="form-label">Video File (MP4)</label>
-              <div
-                onClick={() => fileRef.current.click()}
-                style={{
-                  border:`2px dashed ${mod.file ? 'var(--green)' : 'var(--border2)'}`,
-                  borderRadius:'var(--r2)', padding:'20px',
-                  textAlign:'center', cursor:'pointer',
-                  background: mod.file ? 'var(--green-dim)' : 'var(--bg2)',
-                  transition:'all 0.15s',
-                }}
-              >
-                {mod.file ? (
-                  <div>
-                    <Icon name="Check" size={20} color="var(--green)"/>
-                    <div style={{ fontSize:13, fontWeight:700, color:'var(--green)', marginTop:6 }}>
-                      {mod.file}
+            <div style={{ padding:'16px' }}>
+              {/* Upload button */}
+              <div className="form-group">
+                <label className="form-label">Video File (MP4)</label>
+                <div
+                  onClick={() => fileRef.current.click()}
+                  style={{
+                    border:`2px dashed ${mod.file ? 'var(--green)' : 'var(--border2)'}`,
+                    borderRadius:'var(--r2)', padding:'16px',
+                    textAlign:'center', cursor:'pointer',
+                    background: mod.file ? 'var(--green-dim)' : 'var(--bg3)',
+                    transition:'all 0.15s',
+                  }}
+                >
+                  {mod.file ? (
+                    <div style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:10 }}>
+                      <Icon name="Check" size={16} color="var(--green)"/>
+                      <span style={{ fontSize:13, fontWeight:600, color:'var(--green)' }}>{mod.file}</span>
+                      <span style={{ fontSize:11, color:'var(--text3)' }}>· Click to replace</span>
                     </div>
-                    <div style={{ fontSize:11, color:'var(--text3)', marginTop:4 }}>
-                      Click to replace
+                  ) : (
+                    <div>
+                      <Icon name="Upload" size:18 color="var(--text3)"/>
+                      <div style={{ fontSize:13, fontWeight:600, color:'var(--text2)', marginTop:6 }}>
+                        Click to upload MP4 video
+                      </div>
+                      <div style={{ fontSize:11, color:'var(--text3)', marginTop:4 }}>
+                        MP4, MOV, AVI · Max 2GB
+                      </div>
                     </div>
-                  </div>
-                ) : (
-                  <div>
-                    <Icon name="Upload" size={20} color="var(--text3)"/>
-                    <div style={{ fontSize:13, fontWeight:600, color:'var(--text2)', marginTop:8 }}>
-                      Click to upload MP4 video
-                    </div>
-                    <div style={{ fontSize:11, color:'var(--text3)', marginTop:4 }}>
-                      Supports MP4, MOV, AVI · Max 2GB
-                    </div>
-                  </div>
-                )}
-                <input ref={fileRef} type="file" accept="video/*"
-                  style={{ display:'none' }} onChange={handleFile}/>
+                  )}
+                  <input ref={fileRef} type="file" accept="video/*"
+                    style={{ display:'none' }} onChange={handleFile}/>
+                </div>
               </div>
+
+              {/* ── INLINE VIDEO PREVIEW ─── */}
+              {mod.fileUrl && (
+                <div>
+                  <label className="form-label">
+                    <Icon name="Play" size={11} color="var(--blue)"/> Live Preview
+                  </label>
+                  <div style={{
+                    borderRadius:'var(--r2)', overflow:'hidden',
+                    border:'1px solid var(--border)',
+                    boxShadow:'var(--shadow)',
+                  }}>
+                    <video
+                      src={mod.fileUrl}
+                      controls
+                      style={{ width:'100%', display:'block', maxHeight:320, background:'#000' }}
+                    />
+                  </div>
+                  <div style={{ marginTop:6, fontSize:11, color:'var(--text3)', display:'flex', alignItems:'center', gap:5 }}>
+                    <Icon name="Shield" size={11} color="var(--text3)"/>
+                    Preview only — DRM encryption applied on publish
+                  </div>
+                </div>
+              )}
+
+              {/* Placeholder if no file */}
+              {!mod.fileUrl && (
+                <div style={{
+                  background:'linear-gradient(135deg, #0A0F1E, #1A2744)',
+                  borderRadius:'var(--r2)', aspectRatio:'16/9',
+                  display:'flex', flexDirection:'column',
+                  alignItems:'center', justifyContent:'center',
+                  border:'1px solid rgba(255,255,255,0.05)',
+                }}>
+                  <div style={{ fontSize:40, marginBottom:10 }}>🚌</div>
+                  <div style={{ fontSize:13, color:'rgba(255,255,255,0.5)', fontWeight:600 }}>
+                    Upload a video to preview
+                  </div>
+                  <div style={{ fontSize:11, color:'rgba(255,255,255,0.3)', marginTop:4 }}>
+                    MP4, MOV, AVI supported
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
-          {/* PDF upload */}
+          {/* ── PDF ───────────────────────── */}
           {mod.type === 'pdf' && (
-            <div>
-              <label className="form-label">PDF Document</label>
-              <div
-                onClick={() => fileRef.current.click()}
-                style={{
-                  border:`2px dashed ${mod.file ? 'var(--green)' : 'var(--border2)'}`,
-                  borderRadius:'var(--r2)', padding:'20px',
-                  textAlign:'center', cursor:'pointer',
-                  background: mod.file ? 'var(--green-dim)' : 'var(--bg2)',
-                  transition:'all 0.15s',
-                }}
-              >
-                {mod.file ? (
-                  <div>
-                    <Icon name="Check" size={20} color="var(--green)"/>
-                    <div style={{ fontSize:13, fontWeight:700, color:'var(--green)', marginTop:6 }}>
-                      {mod.file}
+            <div style={{ padding:'16px' }}>
+              <div className="form-group">
+                <label className="form-label">PDF Document</label>
+                <div
+                  onClick={() => fileRef.current.click()}
+                  style={{
+                    border:`2px dashed ${mod.file ? 'var(--green)' : 'var(--border2)'}`,
+                    borderRadius:'var(--r2)', padding:'16px',
+                    textAlign:'center', cursor:'pointer',
+                    background: mod.file ? 'var(--green-dim)' : 'var(--bg3)',
+                    transition:'all 0.15s',
+                  }}
+                >
+                  {mod.file ? (
+                    <div style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:10 }}>
+                      <Icon name="Check" size={16} color="var(--green)"/>
+                      <span style={{ fontSize:13, fontWeight:600, color:'var(--green)' }}>{mod.file}</span>
+                      <span style={{ fontSize:11, color:'var(--text3)' }}>· Click to replace</span>
                     </div>
-                    <div style={{ fontSize:11, color:'var(--text3)', marginTop:4 }}>
-                      Click to replace
+                  ) : (
+                    <div>
+                      <Icon name="FileText" size={18} color="var(--text3)"/>
+                      <div style={{ fontSize:13, fontWeight:600, color:'var(--text2)', marginTop:6 }}>
+                        Click to upload PDF
+                      </div>
+                      <div style={{ fontSize:11, color:'var(--text3)', marginTop:4 }}>
+                        PDF only · Max 100MB
+                      </div>
                     </div>
-                  </div>
-                ) : (
-                  <div>
-                    <Icon name="FileText" size={20} color="var(--text3)"/>
-                    <div style={{ fontSize:13, fontWeight:600, color:'var(--text2)', marginTop:8 }}>
-                      Click to upload PDF
-                    </div>
-                    <div style={{ fontSize:11, color:'var(--text3)', marginTop:4 }}>
-                      PDF only · Max 100MB
-                    </div>
-                  </div>
-                )}
-                <input ref={fileRef} type="file" accept=".pdf"
-                  style={{ display:'none' }} onChange={handleFile}/>
+                  )}
+                  <input ref={fileRef} type="file" accept=".pdf"
+                    style={{ display:'none' }} onChange={handleFile}/>
+                </div>
               </div>
+
+              {/* ── INLINE PDF PREVIEW ────── */}
+              {mod.fileUrl && (
+                <div>
+                  <label className="form-label">
+                    <Icon name="Eye" size={11} color="var(--red)"/> PDF Preview
+                  </label>
+                  <div style={{
+                    borderRadius:'var(--r2)', overflow:'hidden',
+                    border:'1px solid var(--border)', boxShadow:'var(--shadow)',
+                    height:400,
+                  }}>
+                    <iframe
+                      src={mod.fileUrl}
+                      style={{ width:'100%', height:'100%', border:'none' }}
+                      title={mod.title}
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* Placeholder */}
+              {!mod.fileUrl && (
+                <div style={{
+                  background:'#f0f0f0', borderRadius:'var(--r2)',
+                  height:200, display:'flex', flexDirection:'column',
+                  alignItems:'center', justifyContent:'center',
+                  border:'1px solid var(--border)',
+                }}>
+                  <div style={{ background:'#fff', borderRadius:'var(--r2)', padding:'24px 32px', textAlign:'center', boxShadow:'0 2px 12px rgba(0,0,0,0.1)' }}>
+                    <Icon name="FileText" size={32} color="var(--red)"/>
+                    <div style={{ fontSize:13, fontWeight:600, color:'var(--text)', marginTop:10 }}>
+                      Upload a PDF to preview
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
-          {/* Quiz builder */}
+          {/* ── QUIZ ──────────────────────── */}
           {mod.type === 'quiz' && (
-            <div>
-              <label className="form-label">Quiz Questions ({mod.questions?.length || 0} added)</label>
-              <QuizBuilder
-                questions={mod.questions || []}
-                onChange={qs => onUpdate(idx, { ...mod, questions:qs })}
+            <div style={{ padding:'16px' }}>
+              <label className="form-label">
+                <Icon name="Pencil" size={11} color="var(--amber)"/> Quiz Builder
+                <span style={{ marginLeft:8, fontSize:11, color:'var(--text3)', fontWeight:400 }}>
+                  {mod.questions?.length || 0} questions added
+                </span>
+              </label>
+
+              {/* Existing questions preview */}
+              {(mod.questions || []).map((q, qi) => (
+                <div key={q.id||qi} style={{
+                  background:'var(--bg3)', borderRadius:'var(--r)',
+                  padding:'12px 14px', marginBottom:8,
+                  border:'1px solid var(--border)',
+                }}>
+                  <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start', marginBottom:8 }}>
+                    <div style={{ display:'flex', gap:8, alignItems:'flex-start' }}>
+                      <div style={{
+                        width:20, height:20, borderRadius:5, background:'var(--amber)',
+                        color:'#fff', display:'flex', alignItems:'center', justifyContent:'center',
+                        fontSize:10, fontWeight:800, flexShrink:0,
+                      }}>{qi+1}</div>
+                      <span style={{ fontSize:13, fontWeight:600, color:'var(--text)', lineHeight:1.4 }}>{q.q}</span>
+                    </div>
+                    <button onClick={() => {
+                      const qs = (mod.questions||[]).filter((_,i) => i!==qi);
+                      onUpdate(idx, { ...mod, questions:qs });
+                    }} style={{ background:'none', border:'none', cursor:'pointer', color:'var(--red)', padding:2, flexShrink:0 }}>
+                      <Icon name="X" size={12}/>
+                    </button>
+                  </div>
+                  <div style={{ paddingLeft:28 }}>
+                    {q.opts.map((opt, oi) => (
+                      <div key={oi} style={{
+                        display:'flex', alignItems:'center', gap:7, padding:'3px 0',
+                        fontSize:12,
+                        color: oi===q.correct ? 'var(--green)' : 'var(--text2)',
+                        fontWeight: oi===q.correct ? 700 : 400,
+                      }}>
+                        <div style={{
+                          width:14, height:14, borderRadius:'50%', flexShrink:0,
+                          background: oi===q.correct ? 'var(--green)' : 'var(--bg4)',
+                          display:'flex', alignItems:'center', justifyContent:'center',
+                        }}>
+                          {oi===q.correct && <Icon name="Check" size={8} color="#fff" strokeWidth={3}/>}
+                        </div>
+                        {opt}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+
+              {/* Add question inline */}
+              <AddQuestionInline
+                onAdd={(q) => {
+                  const qs = [...(mod.questions||[]), { ...q, id:Date.now() }];
+                  onUpdate(idx, { ...mod, questions:qs });
+                }}
+                accentColor="var(--amber)"
               />
             </div>
           )}
