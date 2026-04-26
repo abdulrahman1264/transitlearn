@@ -40,10 +40,13 @@ export const NAV = {
       { id:'depots',     icon:'Building',      label:'Depots & Routes'        },
     ]},
     { section:'System', items:[
-      { id:'drm',      icon:'Key',      label:'DRM Keys'   },
-      { id:'reports',  icon:'BarChart', label:'Reports'    },
-      { id:'audit',    icon:'Audit',    label:'Audit Log'  },
-      { id:'settings', icon:'Settings', label:'Settings'   },
+      { id:'drm',          icon:'Key',      label:'DRM Keys'   },
+      { id:'reports',      icon:'BarChart', label:'Reports'    },
+      { id:'audit',        icon:'Audit',    label:'Audit Log'  },
+      { id:'settings',     icon:'Settings', label:'Settings'   },
+    ]},
+    { section:'Account', items:[
+      { id:'adminprofile', icon:'Users',    label:'My Profile' },
     ]},
   ],
 };
@@ -69,9 +72,10 @@ export const TOPBAR_TITLES = {
   progress:   'My Progress',
   quiz:       'Quizzes',
   btwlog:     'BTW Sessions',
-  certs:      'My Certificate',
-  schedule:   'Schedule',
-  profile:    'My Profile',
+  certs:          'My Certificate',
+  schedule:       'Schedule',
+  profile:        'My Profile',
+  adminprofile:   'Admin Profile',
 };
 
 export const DEFAULT_VIEWS = {

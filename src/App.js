@@ -22,6 +22,8 @@ import CertificatesPage from './pages/CertificatesPage';
 import MediaUploadPage    from './pages/MediaUploadPage';
 import TrainerDriversPage from './pages/TrainerDriversPage';
 import AdminCoursesPage from './pages/AdminCoursesPage';
+import AdminProfile     from './pages/AdminProfile';
+import AdminCoursesPage from './pages/AdminCoursesPage';
 import QuizBankPage       from './pages/QuizBankPage';
 import TrainerProfile     from './pages/TrainerProfile';
 
@@ -60,6 +62,7 @@ function AppInner() {
       if (view === 'analytics') return <AnalyticsPage/>;
       if (view === 'certs')     return <CertificatesPage/>;
       if (view === 'courses')   return <AdminCoursesPage/>;
+      if (view === 'adminprofile') return <AdminProfile user={user}/>;
     }
     if (authPortal === 'trainer') {
       if (view === 'courses')        return <CoursesPage/>;
