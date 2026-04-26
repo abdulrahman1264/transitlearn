@@ -493,6 +493,7 @@ function DriverTable({ category, onBack }) {
 // ─── Main Admin Dashboard ────────────────────────────────────────
 export default function AdminDashboard({ onView }) {
   const [selectedCat, setSelectedCat] = useState(null);
+  const [activeTab,   setActiveTab]   = useState('overview');
 
   if (selectedCat) {
     return <DriverTable category={selectedCat} onBack={()=>setSelectedCat(null)}/>;
@@ -500,6 +501,21 @@ export default function AdminDashboard({ onView }) {
 
   return (
     <div className="fade-in">
+
+      {/* Dashboard tabs */}
+      <div className="tabs" style={{ marginBottom:24 }}>
+        {[
+          { key:'overview',   icon:'Home',     label:'Overview'   },
+          { key:'categories', icon:'Layers',   label:'Categories' },
+          { key:'analytics',  icon:'BarChart', label:'Analytics'  },
+        ].map(t=>(
+          <button key={t.key} className={`tab ${activeTab===t.key?'active':''}`}
+            onClick={()=>setActiveTab(t.key)}
+            style={{ border:'none', background:'none', cursor:'pointer', fontFamily:'var(--font)', display:'flex', alignItems:'center', gap:6 }}>
+            <Icon name={t.icon} size={13}/> {t.label}
+          </button>
+        ))}
+      </div>
 
       {/* Welcome banner */}
       <div style={{
@@ -637,6 +653,145 @@ export default function AdminDashboard({ onView }) {
         })}
       </div>
 
+      {/* Tab content */}
+      {activeTab === 'analytics' && (
+        <div className="fade-in">
+
+          {/* KPI tiles */}
+          <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:16, marginBottom:24 }}>
+            {[
+              { label:'Total Completions', val:'847',  delta:'+12%', up:true,  color:'blue',  icon:'Trophy'   },
+              { label:'Overall Pass Rate', val:'91%',  delta:'+3%',  up:true,  color:'green', icon:'Shield'   },
+              { label:'Active Trainees',   val:'108',  delta:'+8',   up:true,  color:'teal',  icon:'Users'    },
+              { label:'Avg Score',         val:'83%',  delta:'-1%',  up:false, color:'amber', icon:'Star'     },
+            ].map(t=>(
+              <div key={t.label} className={`stat-tile ${t.color}`}>
+                <div className="stat-icon">
+                  <Icon name={t.icon} size={18} color={`var(--${t.color})`}/>
+                </div>
+                <div className="stat-label">{t.label}</div>
+                <div className="stat-val">{t.val}</div>
+                <div className="stat-delta">
+                  <span className={t.up?'up':'down'}>
+                    <Icon name={t.up?'BarChart':'Alert'} size={11} strokeWidth={2.5}/>
+                    {t.delta} vs last period
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Category breakdown */}
+          <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:20, marginBottom:24 }}>
+            <div className="card">
+              <div className="sec-head">
+                <div>
+                  <div className="sec-title">Completion by Category</div>
+                  <div className="sec-sub">Training completion rates</div>
+                </div>
+              </div>
+              {[
+                { label:'Public Bus — Pre Service', pct:89, drivers:284, color:'var(--blue)'  },
+                { label:'Public Bus — In Service',  pct:94, drivers:196, color:'var(--teal)'  },
+                { label:'School Bus Training',      pct:82, drivers:87,  color:'var(--amber)' },
+              ].map(c=>(
+                <div key={c.label} style={{ marginBottom:16 }}>
+                  <div style={{ display:'flex', justifyContent:'space-between', marginBottom:6 }}>
+                    <span style={{ fontSize:13, fontWeight:600, color:'var(--text)' }}>{c.label}</span>
+                    <span style={{ fontFamily:'var(--font-mono)', fontSize:13, fontWeight:700, color:c.color }}>{c.pct}%</span>
+                  </div>
+                  <div className="prog-bar" style={{ height:8 }}>
+                    <div className="prog-fill" style={{ width:`${c.pct}%`, background:c.color }}/>
+                  </div>
+                  <div style={{ fontSize:11, color:'var(--text3)', marginTop:4 }}>
+                    <Icon name="Users" size={10}/> {c.drivers} drivers enrolled
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="card">
+              <div className="sec-head">
+                <div>
+                  <div className="sec-title">Depot Performance</div>
+                  <div className="sec-sub">Training completion by depot</div>
+                </div>
+              </div>
+              {[
+                { name:'Central Depot',  pct:94, drivers:48 },
+                { name:'North Terminal', pct:78, drivers:32 },
+                { name:'South Hub',      pct:61, drivers:27 },
+                { name:'East Station',   pct:85, drivers:19 },
+                { name:'West Garage',    pct:91, drivers:41 },
+              ].map(d=>{
+                const color = d.pct>=90?'var(--green)':d.pct>=75?'var(--amber)':'var(--red)';
+                const cls   = d.pct>=90?'prog-green':d.pct>=75?'prog-amber':'prog-red';
+                return (
+                  <div key={d.name} style={{ marginBottom:12 }}>
+                    <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:5 }}>
+                      <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+                        <div style={{ width:7, height:7, borderRadius:'50%', background:color }}/>
+                        <span style={{ fontSize:12.5, fontWeight:600, color:'var(--text)' }}>{d.name}</span>
+                        <span className="chip" style={{ fontSize:9 }}>{d.drivers} drivers</span>
+                      </div>
+                      <span style={{ fontFamily:'var(--font-mono)', fontSize:12, fontWeight:700, color }}>{d.pct}%</span>
+                    </div>
+                    <div className="prog-bar" style={{ height:5 }}>
+                      <div className={`prog-fill ${cls}`} style={{ width:`${d.pct}%` }}/>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Monthly chart */}
+          <div className="card">
+            <div className="sec-head">
+              <div>
+                <div className="sec-title">Monthly Completions</div>
+                <div className="sec-sub">Training sessions completed per month</div>
+              </div>
+            </div>
+            <div style={{ display:'flex', alignItems:'flex-end', gap:6, height:100, marginBottom:8 }}>
+              {[42,58,61,74,68,83,79,91,88,95,87,102].map((v,i)=>{
+                const max=102;
+                const h=Math.max(6,(v/max)*100);
+                const isLast=i===11;
+                const months=['J','F','M','A','M','J','J','A','S','O','N','D'];
+                return (
+                  <div key={i} style={{ flex:1, display:'flex', flexDirection:'column', alignItems:'center', gap:4 }}>
+                    <div style={{
+                      width:'100%', height:h,
+                      background:isLast?'var(--blue)':'var(--blue-dim)',
+                      borderRadius:'4px 4px 0 0', transition:'all 0.3s',
+                      border:isLast?'1.5px solid rgba(27,110,243,0.4)':'none',
+                    }} title={`${months[i]}: ${v}`}/>
+                    <span style={{ fontSize:9, color:'var(--text3)', fontWeight:600 }}>{months[i]}</span>
+                  </div>
+                );
+              })}
+            </div>
+            <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:12, marginTop:16 }}>
+              {[
+                { label:'YTD Completions', val:'847', color:'var(--blue)'  },
+                { label:'Avg per Month',   val:'70.6',color:'var(--teal)'  },
+                { label:'Best Month',      val:'102', color:'var(--green)' },
+                { label:'Pass Rate',       val:'91%', color:'var(--amber)' },
+              ].map(s=>(
+                <div key={s.label} style={{ background:'var(--bg3)', borderRadius:'var(--r2)', padding:'12px 14px', border:'1px solid var(--border)' }}>
+                  <div style={{ fontSize:11, color:'var(--text3)', fontWeight:600, marginBottom:4 }}>{s.label}</div>
+                  <div style={{ fontFamily:'var(--font)', fontSize:22, fontWeight:800, color:s.color }}>{s.val}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {activeTab !== 'analytics' && (
+      <>
+
       {/* Quick stats bottom */}
       <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:16 }}>
         {[
@@ -659,7 +814,9 @@ export default function AdminDashboard({ onView }) {
             </div>
           </div>
         ))}
-      </div>
+      </div> 
+      </>
+      )}
     </div>
   );
 }
