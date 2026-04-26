@@ -264,6 +264,7 @@ export default function AdminProfile({ user }) {
           </div>
         </div>
       </div>
+      )} {/* end overview tab */}
     </div>
   );
 }

@@ -102,6 +102,7 @@ function TrainerDetail({ trainer, onBack }) {
           </div>
         </div>
       </div>
+      )} {/* end overview tab */}
     </div>
   );
 }
@@ -304,6 +305,7 @@ export default function TrainersPage() {
           </div>
         ))}
       </div>
+      )} {/* end overview tab */}
     </div>
   );
 }

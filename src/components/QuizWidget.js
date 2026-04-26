@@ -112,6 +112,7 @@ export default function QuizWidget() {
           </button>
         )}
       </div>
+      )} {/* end overview tab */}
     </div>
   );
 }

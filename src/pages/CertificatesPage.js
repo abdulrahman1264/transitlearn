@@ -595,6 +595,7 @@ export default function CertificatesPage({ portal, user }) {
           </tbody>
         </table>
       </div>
+      )} {/* end overview tab */}
     </div>
   );
 }

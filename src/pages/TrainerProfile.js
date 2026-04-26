@@ -235,6 +235,7 @@ export default function TrainerProfile({ user }) {
 
         </div>
       </div>
+      )} {/* end overview tab */}
     </div>
   );
 }

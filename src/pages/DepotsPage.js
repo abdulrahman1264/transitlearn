@@ -94,6 +94,7 @@ function DepotModal({ depot, onClose, onSave }) {
           </button>
         </div>
       </div>
+      )} {/* end overview tab */}
     </div>
   );
 }
@@ -164,6 +165,7 @@ function RouteModal({ route, depots, onClose, onSave }) {
           </button>
         </div>
       </div>
+      )} {/* end overview tab */}
     </div>
   );
 }

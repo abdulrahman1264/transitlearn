@@ -536,6 +536,7 @@ export default function LoginPage({ onSuccess }) {
           )}
         </div>
       </div>
+      )} {/* end overview tab */}
     </div>
   );
 }

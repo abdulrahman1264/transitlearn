@@ -340,6 +340,7 @@ function QuizEditor({ quiz, categoryColor, onSave, onBack }) {
           )}
         </div>
       </div>
+      )} {/* end overview tab */}
     </div>
   );
 }
