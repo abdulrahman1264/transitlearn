@@ -64,11 +64,9 @@ function AppInner() {
       if (view === 'mycourses') return <MyCourses/>;
       if (view === 'progress')  return <DriverDashboard onView={setView}/>;
       if (view === 'quiz')      return <QuizPage/>;
-      if (view === 'btwlog')    return <BtwPage portal="driver"/>;
-      if (view === 'certs')     return <CertificatesPage/>;
+      if (view === 'btwlog')    return <BtwPage portal="driver" user={user}/>;
+      if (view === 'certs')     return <CertificatesPage portal="driver" user={user}/>;
       if (view === 'schedule')  return <GenericPage view={view}/>;
-      if (view === 'trainers')  return <GenericPage view={view}/>;
-      if (view === 'depots')    return <GenericPage view={view}/>;
     }
     return <GenericPage view={view}/>;
   };

@@ -101,8 +101,14 @@ function generateCertificate(cert) {
   URL.revokeObjectURL(url);
 }
 
-export default function CertificatesPage() {
+export default function CertificatesPage({ portal }) {
   const [search,  setSearch]  = useState('');
+  const isDriver = portal === 'driver';
+
+  // Driver only sees their own certificate
+  const ALL_CERTS = isDriver
+    ? CERTS.filter(c => c.driver === 'Marcus Okafor')
+    : CERTS;
   const [filter,  setFilter]  = useState('All');
   const [toast,   setToast]   = useState('');
 
@@ -153,10 +159,10 @@ export default function CertificatesPage() {
       {/* Stats */}
       <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:12, marginBottom:24 }}>
         {[
-          { label:'Total Issued',  val:CERTS.length,                              color:'blue',  icon:'Trophy'  },
-          { label:'Active',        val:CERTS.filter(c=>c.status==='Active').length,  color:'green', icon:'Check'   },
-          { label:'Overdue',       val:CERTS.filter(c=>c.status==='Overdue').length, color:'red',   icon:'Alert'   },
-          { label:'Avg Score',     val:Math.round(CERTS.reduce((a,c)=>a+c.score,0)/CERTS.length)+'%', color:'amber', icon:'Star' },
+          { label:'Total Issued',  val:MY_CERTS.length,                                   color:'blue',  icon:'Trophy'  },
+          { label:'Active',        val:MY_CERTS.filter(c=>c.status==='Active').length,     color:'green', icon:'Check'   },
+          { label:'Overdue',       val:MY_CERTS.filter(c=>c.status==='Overdue').length,    color:'red',   icon:'Alert'   },
+          { label:'Avg Score',     val:MY_CERTS.length > 0 ? Math.round(MY_CERTS.reduce((a,c)=>a+c.score,0)/MY_CERTS.length)+'%' : '0%', color:'amber', icon:'Star' },
         ].map(t=>(
           <div key={t.label} style={{
             background:'var(--bg2)', border:'1px solid var(--border)',
