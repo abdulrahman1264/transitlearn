@@ -133,8 +133,7 @@ function CreateUserModal({ onClose, onSave }) {
           </button>
         </div>
       </div>
-      )} {/* end overview tab */}
-    </div>
+      </div>
   );
 }
 
@@ -280,8 +279,7 @@ function AssignModal({ user, allUsers, onClose, onSave }) {
           </button>
         </div>
       </div>
-      )} {/* end overview tab */}
-    </div>
+      </div>
   );
 }
 
@@ -561,7 +559,6 @@ export default function UserMgmtPage() {
           </tbody>
         </table>
       </div>
-      )} {/* end overview tab */}
-    </div>
+      </div>
   );
 }

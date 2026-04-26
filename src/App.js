@@ -99,8 +99,7 @@ function AppInner() {
         <Topbar portal={authPortal} view={view} user={user} onLogout={handleLogout}/>
         <main className="content">{renderPage()}</main>
       </div>
-      )} {/* end overview tab */}
-    </div>
+      </div>
   );
 }
 

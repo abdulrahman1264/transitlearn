@@ -67,7 +67,6 @@ export default function VideoPlayer({ title = 'Training Video', initialPct = 0 }
           <Icon name="Maximize" size={14} color="rgba(255,255,255,0.6)" />
         </button>
       </div>
-      )} {/* end overview tab */}
-    </div>
+      </div>
   );
 }

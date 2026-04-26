@@ -284,7 +284,6 @@ export default function AnalyticsPage() {
           ))}
         </div>
       </div>
-      )} {/* end overview tab */}
-    </div>
+      </div>
   );
 }

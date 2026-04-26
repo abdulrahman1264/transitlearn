@@ -248,7 +248,6 @@ export default function TrainerDriversPage({ user }) {
           </div>
         ))}
       </div>
-      )} {/* end overview tab */}
-    </div>
+      </div>
   );
 }

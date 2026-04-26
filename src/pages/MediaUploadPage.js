@@ -131,8 +131,7 @@ function VideoPreviewModal({ file, onClose }) {
           </div>
         )}
       </div>
-      )} {/* end overview tab */}
-    </div>
+      </div>
   );
 }
 
@@ -232,8 +231,7 @@ function PdfPreviewModal({ file, onClose }) {
           ))}
         </div>
       </div>
-      )} {/* end overview tab */}
-    </div>
+      </div>
   );
 }
 
@@ -566,7 +564,6 @@ export default function MediaUploadPage() {
           </div>
         ))}
       </div>
-      )} {/* end overview tab */}
-    </div>
+      </div>
   );
 }
