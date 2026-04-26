@@ -1270,26 +1270,24 @@ export default function CoursesPage() {
 
                     {/* Actions — NO analytics */}
                     <div style={{ display:'flex', gap:6, flexShrink:0 }}>
-                      {(c.status === 'Draft' || c.status === 'Rejected') && (
-                        <button className="btn btn-primary btn-sm" onClick={() => setEditing(c)}>
-                          <Icon name="Edit" size={12}/> Edit
-                        </button>
-                      )}
-                      {c.status === 'Published' && (
-                        <>
+                      <div style={{ display:'flex', gap:6 }}>
+                        {(c.status === 'Published' || c.status === 'Pending Approval') && (
                           <button className="btn btn-ghost btn-sm" onClick={() => setPreviewCourse(c)}>
                             <Icon name="Eye" size={12}/> Preview
                           </button>
-                          <button className="btn btn-ghost btn-sm" onClick={() => setEditing(c)}>
-                            <Icon name="Edit" size={12}/> Edit
-                          </button>
-                        </>
-                      )}
-                      {c.status === 'Pending Approval' && (
-                        <button className="btn btn-ghost btn-sm" onClick={() => setPreviewCourse(c)}>
-                          <Icon name="Eye" size={12}/> Preview
+                        )}
+                        <button className="btn btn-ghost btn-sm" onClick={() => setEditing(c)}>
+                          <Icon name="Edit" size={12}/> Edit
                         </button>
-                      )}
+                        <button
+                          className="btn btn-danger btn-sm"
+                          onClick={() => {
+                            if (window.confirm(`Delete "${c.title}"?`))
+                              setCourses(prev => prev.filter(x => x.id !== c.id));
+                          }}>
+                          <Icon name="X" size={12}/> Remove
+                        </button>
+                      </div>
                     </div>
                   </div>
 
