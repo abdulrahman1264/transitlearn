@@ -7,16 +7,13 @@ export const PORTALS = [
 export const NAV = {
   driver: [
     { section:'My Learning', items:[
-      { id:'progress',  icon:'Home',     label:'Dashboard'        },
-      { id:'mycourses', icon:'Book',     label:'My Courses', badge:2 },
-      { id:'quiz',      icon:'Pencil',   label:'Quizzes'          },
-    ]},
-    { section:'My Training', items:[
-      { id:'btwlog',    icon:'Car',      label:'BTW Sessions'     },
-      { id:'schedule',  icon:'Calendar', label:'Schedule'         },
+      { id:'progress',  icon:'Home',     label:'Dashboard'           },
+      { id:'mycourses', icon:'Book',     label:'My Courses',  badge:2 },
+      { id:'quiz',      icon:'Pencil',   label:'Quizzes'             },
     ]},
     { section:'My Account', items:[
-      { id:'certs',     icon:'Trophy',   label:'My Certificates'  },
+      { id:'certs',     icon:'Trophy',   label:'My Certificate'      },
+      { id:'profile',   icon:'Users',    label:'My Profile'          },
     ]},
   ],
   trainer: [
@@ -72,8 +69,9 @@ export const TOPBAR_TITLES = {
   progress:   'My Progress',
   quiz:       'Quizzes',
   btwlog:     'BTW Sessions',
-  certs:      'Certificates',
+  certs:      'My Certificate',
   schedule:   'Schedule',
+  profile:    'My Profile',
 };
 
 export const DEFAULT_VIEWS = {

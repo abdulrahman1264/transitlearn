@@ -1,21 +1,14 @@
 import React, { useState } from 'react';
+import { COURSES, COURSE_PROGS } from '../data/mockData';
 import Icon from '../components/Icons';
-import StatusBadge from '../components/StatusBadge';
 
-const CERTS = [
-  { id:1, driver:'Marcus Okafor',   avatar:'MO', batch:'Batch 153', category:'Public Bus — In Service',  issued:'2025-04-10', expires:'2026-04-10', score:91, status:'Active',  rtaId:'90454', licNo:'216815'   },
-  { id:2, driver:'James Whitfield', avatar:'JW', batch:'Batch 152', category:'Public Bus — Pre Service', issued:'2025-03-15', expires:'2026-03-15', score:96, status:'Active',  rtaId:'90149', licNo:'3929152'  },
-  { id:3, driver:'Rosa Gutierrez',  avatar:'RG', batch:'Batch 152', category:'Public Bus — In Service',  issued:'2025-03-15', expires:'2026-03-15', score:98, status:'Active',  rtaId:'90342', licNo:'3764243'  },
-  { id:4, driver:'Aisha Mensah',    avatar:'AM', batch:'Batch 151', category:'School Bus Training',      issued:'2024-12-20', expires:'2025-12-20', score:88, status:'Overdue', rtaId:'90343', licNo:'1530126'  },
-  { id:5, driver:'Chen Wei',        avatar:'CW', batch:'Batch 153', category:'Public Bus — Pre Service', issued:'2025-04-10', expires:'2026-04-10', score:85, status:'Active',  rtaId:'90324', licNo:'3956510'  },
-];
-
-function generateCertificate(cert) {
+// ── Certificate generator ─────────────────────────────────────────
+function generateCertificate(driver, category, score, date) {
   const html = `<!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8"/>
-<title>Certificate — ${cert.driver}</title>
+<title>Certificate — ${driver.name}</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap');
   *{margin:0;padding:0;box-sizing:border-box}
@@ -28,7 +21,7 @@ function generateCertificate(cert) {
   .bl{bottom:8px;left:8px;border-bottom:3px solid #c9a84c;border-left:3px solid #c9a84c}
   .br{bottom:8px;right:8px;border-bottom:3px solid #c9a84c;border-right:3px solid #c9a84c}
   .header{text-align:center;padding:36px 60px 0}
-  .org{font-family:'Playfair Display',serif;font-size:11px;font-weight:700;letter-spacing:4px;color:#002060;text-transform:uppercase;margin-bottom:6px}
+  .org{font-size:11px;font-weight:700;letter-spacing:4px;color:#002060;text-transform:uppercase;margin-bottom:6px;font-family:'Playfair Display',serif}
   .title{font-family:'Playfair Display',serif;font-size:48px;font-weight:900;color:#002060;line-height:1;margin-bottom:4px}
   .subtitle{font-family:'Playfair Display',serif;font-size:18px;color:#c9a84c;letter-spacing:3px;text-transform:uppercase;margin-bottom:20px}
   .divider{width:200px;height:2px;background:linear-gradient(to right,transparent,#c9a84c,transparent);margin:0 auto 20px}
@@ -62,18 +55,33 @@ function generateCertificate(cert) {
     <div class="subtitle">of Completion</div>
     <div class="divider"></div>
     <div class="presents">This is to certify that</div>
-    <div class="recipient">${cert.driver}</div>
+    <div class="recipient">${driver.name}</div>
     <div class="body-text">
-      has successfully completed the required training programme in
-      <span class="course-name">${cert.category}</span>
+      has successfully completed all required training modules in
+      <span class="course-name">${category}</span>
       and demonstrated the competency required to operate public transport vehicles in the Emirate of Dubai.
     </div>
     <div class="details">
-      <div class="detail-item"><div class="detail-label">RTA ID</div><div class="detail-val">${cert.rtaId}</div></div>
-      <div class="detail-item"><div class="detail-label">License No.</div><div class="detail-val">${cert.licNo}</div></div>
-      <div class="detail-item"><div class="detail-label">Training Batch</div><div class="detail-val">${cert.batch}</div></div>
-      <div class="detail-item"><div class="detail-label">Score</div><div class="detail-val">${cert.score}%</div></div>
-      <div class="detail-item"><div class="detail-label">Issued</div><div class="detail-val">${cert.issued}</div></div>
+      <div class="detail-item">
+        <div class="detail-label">Employee ID</div>
+        <div class="detail-val">${driver.emp || 'D-10421'}</div>
+      </div>
+      <div class="detail-item">
+        <div class="detail-label">Category</div>
+        <div class="detail-val">${category}</div>
+      </div>
+      <div class="detail-item">
+        <div class="detail-label">Final Score</div>
+        <div class="detail-val">${score}%</div>
+      </div>
+      <div class="detail-item">
+        <div class="detail-label">Issue Date</div>
+        <div class="detail-val">${date}</div>
+      </div>
+      <div class="detail-item">
+        <div class="detail-label">Valid Until</div>
+        <div class="detail-val">${new Date(new Date(date).setFullYear(new Date(date).getFullYear()+1)).toISOString().slice(0,10)}</div>
+      </div>
     </div>
   </div>
   <div class="footer">
@@ -82,7 +90,9 @@ function generateCertificate(cert) {
       <div class="sig-name">Training Director</div>
       <div class="sig-title">Roads & Transport Authority</div>
     </div>
-    <div class="seal"><div class="seal-text">RTA<br/>CERTIFIED<br/>DUBAI</div></div>
+    <div class="seal">
+      <div class="seal-text">RTA<br/>CERTIFIED<br/>DUBAI</div>
+    </div>
     <div class="sig-block">
       <div class="sig-line"></div>
       <div class="sig-name">Programme Coordinator</div>
@@ -92,39 +102,332 @@ function generateCertificate(cert) {
 </div>
 </body>
 </html>`;
+
   const blob = new Blob([html], { type:'text/html' });
   const url  = URL.createObjectURL(blob);
   const a    = document.createElement('a');
   a.href     = url;
-  a.download = `Certificate_${cert.driver.replace(/\s+/g,'_')}.html`;
+  a.download = `Certificate_${driver.name.replace(/\s+/g,'_')}_${category.replace(/\s+/g,'_')}.html`;
   a.click();
   URL.revokeObjectURL(url);
 }
 
-export default function CertificatesPage({ portal }) {
-  const [search,  setSearch]  = useState('');
+// ── Category definitions ──────────────────────────────────────────
+const CATEGORIES = [
+  {
+    id:       'pre-service',
+    label:    'Public Bus — Pre Service',
+    color:    'var(--blue)',
+    dim:      'var(--blue-dim)',
+    border:   'rgba(27,110,243,0.2)',
+    icon:     'Bus',
+    courseIds: [1, 5],
+  },
+  {
+    id:       'in-service',
+    label:    'Public Bus — In Service',
+    color:    'var(--teal)',
+    dim:      'var(--teal-dim)',
+    border:   'rgba(8,145,178,0.2)',
+    icon:     'Layers',
+    courseIds: [2, 4, 6],
+  },
+  {
+    id:       'school-bus',
+    label:    'School Bus Training',
+    color:    'var(--amber)',
+    dim:      'var(--amber-dim)',
+    border:   'rgba(217,119,6,0.2)',
+    icon:     'Star',
+    courseIds: [3],
+  },
+];
+
+// ── Check if category is complete ─────────────────────────────────
+function getCategoryStatus(cat, courseProgs) {
+  const progs     = cat.courseIds.map(id => courseProgs[id] || 0);
+  const avgProg   = Math.round(progs.reduce((a,b) => a+b, 0) / progs.length);
+  const completed = progs.every(p => p === 100);
+  const started   = progs.some(p => p > 0);
+  return { avgProg, completed, started, progs };
+}
+
+// ── Admin/Trainer view — all drivers certs table ──────────────────
+const ALL_ISSUED = [
+  { name:'Marcus Okafor',   emp:'D-10421', avatar:'MO', category:'Public Bus — In Service',  score:91, issued:'2025-04-10', expires:'2026-04-10', status:'Active'  },
+  { name:'James Whitfield', emp:'D-10423', avatar:'JW', category:'Public Bus — Pre Service', score:96, issued:'2025-03-15', expires:'2026-03-15', status:'Active'  },
+  { name:'Rosa Gutierrez',  emp:'D-10426', avatar:'RG', category:'Public Bus — In Service',  score:98, issued:'2025-03-15', expires:'2026-03-15', status:'Active'  },
+  { name:'Aisha Mensah',    emp:'D-10424', avatar:'AM', category:'School Bus Training',       score:88, issued:'2024-12-20', expires:'2025-12-20', status:'Overdue' },
+  { name:'Chen Wei',        emp:'D-10425', avatar:'CW', category:'Public Bus — Pre Service', score:85, issued:'2025-04-10', expires:'2026-04-10', status:'Active'  },
+];
+
+export default function CertificatesPage({ portal, user }) {
+  const [toast, setToast] = useState('');
   const isDriver = portal === 'driver';
 
-  // Driver only sees their own certificate
-  const ALL_CERTS = isDriver
-    ? CERTS.filter(c => c.driver === 'Marcus Okafor')
-    : CERTS;
-  const [filter,  setFilter]  = useState('All');
-  const [toast,   setToast]   = useState('');
+  const showToast = (msg) => {
+    setToast(msg);
+    setTimeout(() => setToast(''), 3500);
+  };
 
-  const showToast = (msg) => { setToast(msg); setTimeout(()=>setToast(''),3000); };
+  const today = new Date().toISOString().slice(0, 10);
 
-  const filtered = CERTS.filter(c => {
+  // ── DRIVER VIEW ───────────────────────────────────────────────
+  if (isDriver) {
+    const driverInfo = {
+      name: user?.name || 'Marcus Okafor',
+      emp:  user?.emp  || 'D-10421',
+    };
+
+    return (
+      <div className="fade-in">
+
+        {/* Toast */}
+        {toast && (
+          <div style={{
+            position:'fixed', top:20, right:20, zIndex:2000,
+            background:'var(--green-dim)', border:'1px solid rgba(22,163,74,0.3)',
+            borderRadius:'var(--r2)', padding:'12px 18px',
+            display:'flex', alignItems:'center', gap:8,
+            fontSize:13, color:'var(--green)', fontWeight:600,
+            boxShadow:'var(--shadow-lg)',
+          }}>
+            <Icon name="Check" size={14} strokeWidth={2.5}/> {toast}
+          </div>
+        )}
+
+        {/* Header */}
+        <div style={{ marginBottom:28 }}>
+          <div style={{ fontSize:20, fontWeight:800, color:'var(--text)', letterSpacing:'-0.4px', marginBottom:4 }}>
+            My Certificates
+          </div>
+          <div style={{ fontSize:13, color:'var(--text3)' }}>
+            Complete all courses in a category to earn your certificate
+          </div>
+        </div>
+
+        {/* How it works banner */}
+        <div style={{
+          background:'var(--brand-dim)', border:'1px solid rgba(27,110,243,0.15)',
+          borderRadius:'var(--r3)', padding:'16px 20px',
+          display:'flex', alignItems:'center', gap:16, marginBottom:28,
+        }}>
+          <Icon name="Info" size={16} color="var(--brand)"/>
+          <div style={{ fontSize:13, color:'var(--text2)', lineHeight:1.55 }}>
+            <strong style={{ color:'var(--text)' }}>How certificates work:</strong>{' '}
+            Complete 100% of all courses in a training category →
+            Your certificate is automatically generated and ready to download instantly.
+          </div>
+        </div>
+
+        {/* 3 Category Certificate Cards */}
+        <div style={{ display:'flex', flexDirection:'column', gap:16 }}>
+          {CATEGORIES.map(cat => {
+            const { avgProg, completed, started, progs } = getCategoryStatus(cat, COURSE_PROGS);
+            const catCourses = COURSES.filter(c => cat.courseIds.includes(c.id));
+
+            return (
+              <div key={cat.id} style={{
+                background:'var(--bg2)',
+                border:`1.5px solid ${completed ? cat.color + '44' : 'var(--border)'}`,
+                borderRadius:'var(--r3)',
+                overflow:'hidden',
+                boxShadow: completed ? `0 4px 20px ${cat.color}18` : 'var(--shadow-sm)',
+                transition:'all 0.2s',
+              }}>
+
+                {/* Card header */}
+                <div style={{
+                  padding:'20px 22px',
+                  background: completed
+                    ? `linear-gradient(135deg, ${cat.dim}, transparent)`
+                    : 'transparent',
+                  borderBottom:'1px solid var(--border)',
+                  display:'flex', alignItems:'center', gap:16,
+                }}>
+                  {/* Icon */}
+                  <div style={{
+                    width:52, height:52, borderRadius:14, flexShrink:0,
+                    background: completed ? cat.color : 'var(--bg4)',
+                    display:'flex', alignItems:'center', justifyContent:'center',
+                    boxShadow: completed ? `0 4px 14px ${cat.color}44` : 'none',
+                    transition:'all 0.3s',
+                  }}>
+                    <Icon
+                      name={completed ? 'Trophy' : cat.icon}
+                      size={22}
+                      color={completed ? '#fff' : 'var(--text3)'}
+                      strokeWidth={1.75}
+                    />
+                  </div>
+
+                  {/* Info */}
+                  <div style={{ flex:1 }}>
+                    <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:5 }}>
+                      <span style={{ fontSize:15, fontWeight:800, color:'var(--text)', letterSpacing:'-0.3px' }}>
+                        {cat.label}
+                      </span>
+                      {completed && (
+                        <span style={{
+                          display:'inline-flex', alignItems:'center', gap:4,
+                          padding:'3px 10px', borderRadius:20,
+                          background: cat.color, color:'#fff',
+                          fontSize:10, fontWeight:700, letterSpacing:'0.3px',
+                        }}>
+                          <Icon name="Check" size={9} color="#fff" strokeWidth={3}/>
+                          CERTIFIED
+                        </span>
+                      )}
+                      {!completed && started && (
+                        <span className="badge badge-amber">
+                          <Icon name="Clock" size={9} strokeWidth={2.5}/> In Progress
+                        </span>
+                      )}
+                      {!completed && !started && (
+                        <span className="badge badge-gray">
+                          <Icon name="Lock" size={9}/> Not Started
+                        </span>
+                      )}
+                    </div>
+                    <div style={{ fontSize:12, color:'var(--text3)' }}>
+                      {catCourses.length} courses required · {progs.filter(p=>p===100).length} of {progs.length} completed
+                    </div>
+                  </div>
+
+                  {/* Progress ring + pct */}
+                  <div style={{ textAlign:'center', flexShrink:0 }}>
+                    <div style={{
+                      fontFamily:'var(--font-mono)', fontSize:22, fontWeight:800,
+                      color: completed ? cat.color : 'var(--text3)',
+                    }}>{avgProg}%</div>
+                    <div style={{ fontSize:10, color:'var(--text3)', fontWeight:600 }}>Complete</div>
+                  </div>
+                </div>
+
+                {/* Course progress bars */}
+                <div style={{ padding:'16px 22px' }}>
+                  <div style={{ marginBottom:14 }}>
+                    {catCourses.map((course, i) => {
+                      const p = COURSE_PROGS[course.id] || 0;
+                      return (
+                        <div key={course.id} style={{ marginBottom:10 }}>
+                          <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:5 }}>
+                            <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+                              <div style={{
+                                width:18, height:18, borderRadius:'50%',
+                                background: p===100 ? 'var(--green)' : 'var(--bg4)',
+                                display:'flex', alignItems:'center', justifyContent:'center',
+                                flexShrink:0,
+                              }}>
+                                {p === 100
+                                  ? <Icon name="Check" size={10} color="#fff" strokeWidth={2.5}/>
+                                  : <span style={{ fontSize:8, fontWeight:700, color:'var(--text3)', fontFamily:'var(--font-mono)' }}>{i+1}</span>
+                                }
+                              </div>
+                              <span style={{ fontSize:12.5, fontWeight:500, color: p===100 ? 'var(--text)' : 'var(--text2)' }}>
+                                {course.title}
+                              </span>
+                            </div>
+                            <span style={{
+                              fontSize:11, fontWeight:700,
+                              fontFamily:'var(--font-mono)',
+                              color: p===100 ? 'var(--green)' : p > 0 ? 'var(--blue)' : 'var(--text3)',
+                            }}>
+                              {p}%
+                            </span>
+                          </div>
+                          <div className="prog-bar" style={{ height:5 }}>
+                            <div
+                              className={`prog-fill ${p===100?'prog-green':p>0?'prog-blue':'prog-blue'}`}
+                              style={{ width:`${p}%`, background: p===100 ? 'var(--green)' : cat.color }}
+                            />
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  {/* Overall progress bar */}
+                  <div style={{ marginBottom:16 }}>
+                    <div className="prog-bar" style={{ height:8 }}>
+                      <div
+                        className="prog-fill"
+                        style={{
+                          width:`${avgProg}%`,
+                          background: completed ? 'var(--green)' : cat.color,
+                          transition:'width 0.5s ease',
+                        }}
+                      />
+                    </div>
+                  </div>
+
+                  {/* CTA */}
+                  {completed ? (
+                    <div style={{ display:'flex', gap:10 }}>
+                      <button
+                        className="btn btn-primary"
+                        style={{ flex:1, background: cat.color, borderColor: cat.color, boxShadow:`0 4px 12px ${cat.color}44` }}
+                        onClick={() => {
+                          generateCertificate(driverInfo, cat.label, avgProg, today);
+                          showToast(`🎉 Certificate downloaded for ${cat.label}!`);
+                        }}
+                      >
+                        <Icon name="Download" size={14}/> Download Certificate
+                      </button>
+                      <button className="btn btn-ghost btn-sm">
+                        <Icon name="Mail" size={13}/> Email Me
+                      </button>
+                    </div>
+                  ) : (
+                    <div style={{
+                      padding:'12px 16px',
+                      background:'var(--bg3)', borderRadius:'var(--r)',
+                      border:'1px dashed var(--border2)',
+                      display:'flex', alignItems:'center', gap:10,
+                    }}>
+                      <Icon name="Lock" size={14} color="var(--text3)"/>
+                      <div>
+                        <div style={{ fontSize:12, fontWeight:600, color:'var(--text2)' }}>
+                          {started
+                            ? `${progs.filter(p=>p===100).length} of ${progs.length} courses done — keep going!`
+                            : 'Start your courses to earn this certificate'
+                          }
+                        </div>
+                        <div style={{ fontSize:11, color:'var(--text3)', marginTop:2 }}>
+                          Complete all {catCourses.length} courses to unlock your certificate
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
+
+  // ── ADMIN / TRAINER VIEW ──────────────────────────────────────
+  const [search, setSearch] = useState('');
+  const [filter, setFilter] = useState('All');
+
+  const filtered = ALL_ISSUED.filter(c => {
     const matchSearch =
-      c.driver.toLowerCase().includes(search.toLowerCase()) ||
-      c.batch.toLowerCase().includes(search.toLowerCase()) ||
-      c.rtaId.includes(search);
+      c.name.toLowerCase().includes(search.toLowerCase()) ||
+      c.emp.toLowerCase().includes(search.toLowerCase())  ||
+      c.category.toLowerCase().includes(search.toLowerCase());
     const matchFilter = filter === 'All' || c.status === filter;
     return matchSearch && matchFilter;
   });
 
+  const totalActive = ALL_ISSUED.filter(c => c.status === 'Active').length;
+  const totalOverdue= ALL_ISSUED.filter(c => c.status === 'Overdue').length;
+  const avgScore    = Math.round(ALL_ISSUED.reduce((a,c) => a+c.score, 0) / ALL_ISSUED.length);
+
   return (
     <div className="fade-in">
+
       {toast && (
         <div style={{
           position:'fixed', top:20, right:20, zIndex:2000,
@@ -141,29 +444,32 @@ export default function CertificatesPage({ portal }) {
       {/* Header */}
       <div className="flex items-center justify-between mb24">
         <div>
-          <div style={{ fontFamily:'var(--font-head)', fontSize:15, fontWeight:800, color:'var(--text)' }}>
-            Certificates
+          <div style={{ fontSize:16, fontWeight:800, color:'var(--text)', letterSpacing:'-0.3px' }}>
+            Issued Certificates
           </div>
           <div style={{ fontSize:12, color:'var(--text3)', marginTop:2 }}>
-            View, download and manage all issued training certificates
+            All auto-generated certificates across the platform
           </div>
         </div>
-        <div className="flex items-center gap8">
-          <button className="btn btn-ghost btn-sm"
-            onClick={()=>{ filtered.forEach((c,i)=>setTimeout(()=>generateCertificate(c),i*300)); showToast(`Generating ${filtered.length} certificates...`); }}>
-            <Icon name="Download" size={12}/> Download All
-          </button>
-        </div>
+        <button className="btn btn-ghost btn-sm"
+          onClick={() => {
+            filtered.forEach((c,i) => setTimeout(() => generateCertificate(
+              { name:c.name, emp:c.emp }, c.category, c.score, c.issued
+            ), i*300));
+            showToast(`Generating ${filtered.length} certificates...`);
+          }}>
+          <Icon name="Download" size={12}/> Export All
+        </button>
       </div>
 
       {/* Stats */}
       <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:12, marginBottom:24 }}>
         {[
-          { label:'Total Issued',  val:MY_CERTS.length,                                   color:'blue',  icon:'Trophy'  },
-          { label:'Active',        val:MY_CERTS.filter(c=>c.status==='Active').length,     color:'green', icon:'Check'   },
-          { label:'Overdue',       val:MY_CERTS.filter(c=>c.status==='Overdue').length,    color:'red',   icon:'Alert'   },
-          { label:'Avg Score',     val:MY_CERTS.length > 0 ? Math.round(MY_CERTS.reduce((a,c)=>a+c.score,0)/MY_CERTS.length)+'%' : '0%', color:'amber', icon:'Star' },
-        ].map(t=>(
+          { label:'Total Issued',  val:ALL_ISSUED.length, color:'blue',  icon:'Trophy' },
+          { label:'Active',        val:totalActive,       color:'green', icon:'Check'  },
+          { label:'Overdue',       val:totalOverdue,      color:'red',   icon:'Alert'  },
+          { label:'Avg Score',     val:avgScore+'%',      color:'amber', icon:'Star'   },
+        ].map(t => (
           <div key={t.label} style={{
             background:'var(--bg2)', border:'1px solid var(--border)',
             borderRadius:'var(--r2)', padding:'14px 16px',
@@ -173,7 +479,7 @@ export default function CertificatesPage({ portal }) {
               <Icon name={t.icon} size={16} color={`var(--${t.color})`}/>
             </div>
             <div>
-              <div style={{ fontSize:22, fontFamily:'var(--font-head)', fontWeight:800, color:'var(--text)', lineHeight:1 }}>{t.val}</div>
+              <div style={{ fontSize:22, fontWeight:800, color:'var(--text)', lineHeight:1 }}>{t.val}</div>
               <div style={{ fontSize:11, color:'var(--text3)', fontWeight:600, marginTop:2 }}>{t.label}</div>
             </div>
           </div>
@@ -183,100 +489,96 @@ export default function CertificatesPage({ portal }) {
       {/* Controls */}
       <div className="flex items-center justify-between mb16">
         <div className="flex items-center gap8">
-          {['All','Active','Overdue'].map(f=>(
+          {['All','Active','Overdue'].map(f => (
             <button key={f}
               className={`btn btn-sm ${filter===f?'btn-primary':'btn-ghost'}`}
-              onClick={()=>setFilter(f)}>
+              onClick={() => setFilter(f)}>
               {f}
             </button>
           ))}
         </div>
         <div className="tb-search">
           <Icon name="Search" size={13} color="var(--text3)"/>
-          <input placeholder="Search certificates..."
-            value={search} onChange={e=>setSearch(e.target.value)}/>
+          <input placeholder="Search by driver name..."
+            value={search} onChange={e => setSearch(e.target.value)}/>
         </div>
       </div>
 
-      {/* Certificates grid */}
-      <div style={{ display:'grid', gridTemplateColumns:'repeat(2,1fr)', gap:14 }}>
-        {filtered.map(cert => (
-          <div key={cert.id} className="card" style={{
-            borderTop:`3px solid ${cert.status==='Active'?'var(--blue)':'var(--red)'}`,
-          }}>
-            <div className="flex items-center justify-between mb14">
-              <div className="flex items-center gap10">
-                <div style={{
-                  width:40, height:40, borderRadius:12, flexShrink:0,
-                  background: cert.status==='Active' ? 'var(--blue-dim)' : 'var(--red-dim)',
-                  border:`1.5px solid ${cert.status==='Active'?'rgba(29,111,242,0.2)':'rgba(239,68,68,0.2)'}`,
-                  display:'flex', alignItems:'center', justifyContent:'center',
-                  fontSize:11, fontWeight:700, fontFamily:'var(--font-mono)',
-                  color: cert.status==='Active' ? 'var(--blue)' : 'var(--red)',
-                }}>{cert.avatar}</div>
-                <div>
-                  <div style={{ fontFamily:'var(--font-head)', fontSize:14, fontWeight:800, color:'var(--text)' }}>
-                    {cert.driver}
+      {/* Table */}
+      <div className="tbl-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Driver</th>
+              <th>Category</th>
+              <th>Score</th>
+              <th>Issued</th>
+              <th>Expires</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filtered.map((c, i) => (
+              <tr key={i}>
+                <td>
+                  <div style={{ display:'flex', alignItems:'center', gap:10 }}>
+                    <div style={{
+                      width:32, height:32, borderRadius:8, flexShrink:0,
+                      background:'var(--blue-dim)', color:'var(--blue)',
+                      border:'1px solid rgba(27,110,243,0.2)',
+                      display:'flex', alignItems:'center', justifyContent:'center',
+                      fontSize:10, fontWeight:700, fontFamily:'var(--font-mono)',
+                    }}>{c.avatar}</div>
+                    <div>
+                      <div style={{ fontWeight:700, fontSize:13, color:'var(--text)' }}>{c.name}</div>
+                      <div style={{ fontSize:11, color:'var(--text3)', fontFamily:'var(--font-mono)' }}>{c.emp}</div>
+                    </div>
                   </div>
-                  <div style={{ fontSize:11, color:'var(--text3)', marginTop:2 }}>{cert.category}</div>
-                </div>
-              </div>
-              <StatusBadge status={cert.status}/>
-            </div>
-
-            <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:8, marginBottom:14 }}>
-              {[
-                { label:'RTA ID',  val:cert.rtaId,   icon:'Key'      },
-                { label:'Batch',   val:cert.batch,   icon:'Layers'   },
-                { label:'Score',   val:`${cert.score}%`, icon:'Star' },
-              ].map(r=>(
-                <div key={r.label} style={{
-                  background:'var(--bg3)', borderRadius:'var(--r)',
-                  padding:'8px 10px', border:'1px solid var(--border)',
-                }}>
-                  <div style={{ fontSize:10, color:'var(--text3)', fontWeight:600, marginBottom:3 }}>
-                    <Icon name={r.icon} size={9}/> {r.label}
+                </td>
+                <td>
+                  <span style={{ fontSize:13, color:'var(--text2)' }}>{c.category}</span>
+                </td>
+                <td>
+                  <span style={{
+                    fontFamily:'var(--font-mono)', fontSize:13, fontWeight:700,
+                    color: c.score >= 90 ? 'var(--green)' : c.score >= 80 ? 'var(--blue)' : 'var(--amber)',
+                  }}>{c.score}%</span>
+                </td>
+                <td>
+                  <span style={{ fontFamily:'var(--font-mono)', fontSize:12, color:'var(--text2)' }}>{c.issued}</span>
+                </td>
+                <td>
+                  <span style={{
+                    fontFamily:'var(--font-mono)', fontSize:12,
+                    color: c.status==='Overdue' ? 'var(--red)' : 'var(--text2)',
+                    fontWeight: c.status==='Overdue' ? 700 : 400,
+                  }}>{c.expires}</span>
+                </td>
+                <td>
+                  <span className={`badge ${c.status==='Active'?'badge-green':'badge-red'}`}>
+                    <Icon name={c.status==='Active'?'Check':'Alert'} size={9} strokeWidth={2.5}/>
+                    {c.status}
+                  </span>
+                </td>
+                <td>
+                  <div style={{ display:'flex', gap:6 }}>
+                    <button className="btn btn-ghost btn-sm"
+                      onClick={() => {
+                        generateCertificate({ name:c.name, emp:c.emp }, c.category, c.score, c.issued);
+                        showToast(`Downloaded: ${c.name}`);
+                      }}>
+                      <Icon name="Download" size={11}/> PDF
+                    </button>
+                    <button className="btn btn-ghost btn-sm">
+                      <Icon name="Mail" size={11}/>
+                    </button>
                   </div>
-                  <div style={{ fontSize:12, fontWeight:700, color:'var(--text)', fontFamily:'var(--font-mono)' }}>
-                    {r.val}
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            <div className="flex items-center justify-between" style={{
-              padding:'10px 12px', background:'var(--bg3)',
-              borderRadius:'var(--r)', border:'1px solid var(--border)',
-              marginBottom:14,
-            }}>
-              <div className="flex items-center gap6">
-                <Icon name="Calendar" size={11} color="var(--text3)"/>
-                <span style={{ fontSize:11, color:'var(--text3)' }}>Issued: </span>
-                <span style={{ fontSize:11, fontWeight:600, color:'var(--text)', fontFamily:'var(--font-mono)' }}>{cert.issued}</span>
-              </div>
-              <div className="flex items-center gap6">
-                <Icon name="Clock" size={11} color={cert.status==='Overdue'?'var(--red)':'var(--text3)'}/>
-                <span style={{ fontSize:11, color:'var(--text3)' }}>Expires: </span>
-                <span style={{ fontSize:11, fontWeight:600, color:cert.status==='Overdue'?'var(--red)':'var(--text)', fontFamily:'var(--font-mono)' }}>
-                  {cert.expires}
-                </span>
-              </div>
-            </div>
-
-            <div className="flex items-center gap8">
-              <button className="btn btn-primary btn-sm" style={{ flex:1 }}
-                onClick={()=>{ generateCertificate(cert); showToast(`Certificate downloaded for ${cert.driver}`); }}>
-                <Icon name="Download" size={12}/> Download Certificate
-              </button>
-              <button className="btn btn-ghost btn-sm">
-                <Icon name="Mail" size={12}/> Email
-              </button>
-              <button className="btn btn-ghost btn-sm">
-                <Icon name="Eye" size={12}/>
-              </button>
-            </div>
-          </div>
-        ))}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
   );
