@@ -23,7 +23,6 @@ import MediaUploadPage    from './pages/MediaUploadPage';
 import TrainerDriversPage from './pages/TrainerDriversPage';
 import AdminCoursesPage from './pages/AdminCoursesPage';
 import AdminProfile     from './pages/AdminProfile';
-import AdminCoursesPage from './pages/AdminCoursesPage';
 import QuizBankPage       from './pages/QuizBankPage';
 import TrainerProfile     from './pages/TrainerProfile';
 
