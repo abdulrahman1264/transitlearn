@@ -667,13 +667,248 @@ function CourseEditor({ course, onSave, onBack }) {
   );
 }
 
+// ── Course Preview ────────────────────────────────────────────────
+function CoursePreview({ course, onBack, onEdit }) {
+  const [activeModule, setActiveModule] = useState(0);
+  const mod = course.modules[activeModule];
+
+  const typeColor = { video:'var(--blue)', pdf:'var(--red)', quiz:'var(--amber)' };
+  const typeDim   = { video:'var(--blue-dim)', pdf:'var(--red-dim)', quiz:'var(--amber-dim)' };
+  const typeIcon  = { video:'Video', pdf:'FileText', quiz:'Pencil' };
+
+  return (
+    <div className="fade-in">
+      {/* Back bar */}
+      <div style={{ display:'flex', alignItems:'center', gap:12, marginBottom:24 }}>
+        <button className="btn btn-ghost btn-sm" onClick={onBack}>
+          <Icon name="ArrowLeft" size={13}/> Course Builder
+        </button>
+        <Icon name="ChevronRight" size={13} color="var(--text3)"/>
+        <span style={{ fontSize:13, fontWeight:600, color:'var(--text)' }}>Preview: {course.title}</span>
+        <span style={{ marginLeft:'auto', display:'flex', gap:8 }}>
+          <span className={`badge ${STATUS_STYLES[course.status]?.cls || 'badge-gray'}`}>
+            {course.status}
+          </span>
+          {(course.status === 'Draft' || course.status === 'Published') && (
+            <button className="btn btn-primary btn-sm" onClick={() => onEdit(course)}>
+              <Icon name="Edit" size={12}/> Edit Course
+            </button>
+          )}
+        </span>
+      </div>
+
+      {/* Course header */}
+      <div style={{
+        background:'linear-gradient(135deg, var(--brand) 0%, #1458C8 100%)',
+        borderRadius:'var(--r3)', padding:'24px 28px', marginBottom:20,
+        position:'relative', overflow:'hidden',
+      }}>
+        <div style={{ position:'absolute', top:-30, right:-30, width:160, height:160, borderRadius:'50%', background:'rgba(255,255,255,0.06)' }}/>
+        <div style={{ position:'relative' }}>
+          <div style={{ fontSize:11, color:'rgba(255,255,255,0.65)', marginBottom:6, textTransform:'uppercase', letterSpacing:'0.5px', fontWeight:600 }}>
+            {course.category}
+          </div>
+          <div style={{ fontSize:22, fontWeight:800, color:'#fff', letterSpacing:'-0.5px', marginBottom:8 }}>
+            {course.title}
+          </div>
+          <div style={{ fontSize:13, color:'rgba(255,255,255,0.75)', marginBottom:16, maxWidth:500 }}>
+            {course.description || `Comprehensive training course covering all essential ${course.category} content including videos, PDFs and assessments.`}
+          </div>
+          <div style={{ display:'flex', gap:10 }}>
+            <span style={{ background:'rgba(255,255,255,0.15)', color:'#fff', fontSize:11, fontWeight:600, padding:'4px 10px', borderRadius:6, display:'flex', alignItems:'center', gap:5 }}>
+              <Icon name="Book" size={10} color="#fff"/> {course.modules.length} modules
+            </span>
+            <span style={{ background:'rgba(255,255,255,0.15)', color:'#fff', fontSize:11, fontWeight:600, padding:'4px 10px', borderRadius:6, display:'flex', alignItems:'center', gap:5 }}>
+              <Icon name="Users" size={10} color="#fff"/> {course.enrolled} enrolled
+            </span>
+            <span style={{ background:'rgba(255,255,255,0.15)', color:'#fff', fontSize:11, fontWeight:600, padding:'4px 10px', borderRadius:6, display:'flex', alignItems:'center', gap:5 }}>
+              <Icon name="Star" size={10} color="#fff"/> Pass: 80%
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div style={{ display:'grid', gridTemplateColumns:'1fr 300px', gap:20, alignItems:'start' }}>
+
+        {/* Left — content viewer */}
+        <div>
+          {/* Active module view */}
+          {mod && (
+            <div style={{ marginBottom:16 }}>
+              {mod.type === 'video' && (
+                <div style={{
+                  background:'linear-gradient(135deg, #0A0F1E, #1A2744)',
+                  borderRadius:'var(--r3)', aspectRatio:'16/9',
+                  display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center',
+                  position:'relative', marginBottom:12,
+                }}>
+                  <div style={{ fontSize:56, marginBottom:12 }}>🚌</div>
+                  <div style={{
+                    width:56, height:56, borderRadius:'50%',
+                    background:'rgba(255,255,255,0.15)',
+                    border:'2px solid rgba(255,255,255,0.3)',
+                    display:'flex', alignItems:'center', justifyContent:'center',
+                    marginBottom:12,
+                  }}>
+                    <Icon name="Play" size={22} color="#fff" strokeWidth={2}/>
+                  </div>
+                  <div style={{ fontSize:14, color:'rgba(255,255,255,0.8)', fontWeight:600 }}>
+                    {mod.title}
+                  </div>
+                  <div style={{ position:'absolute', top:12, right:12, background:'rgba(0,0,0,0.55)', color:'rgba(255,255,255,0.55)', fontSize:9, fontFamily:'var(--font-mono)', padding:'3px 8px', borderRadius:5, display:'flex', alignItems:'center', gap:4 }}>
+                    <Icon name="Shield" size={9} color="rgba(255,255,255,0.5)"/> DRM Protected
+                  </div>
+                  {/* Controls */}
+                  <div style={{ position:'absolute', bottom:0, left:0, right:0, background:'rgba(0,0,0,0.8)', padding:'10px 16px', display:'flex', alignItems:'center', gap:10 }}>
+                    <Icon name="Play" size={14} color="rgba(255,255,255,0.7)"/>
+                    <span style={{ color:'rgba(255,255,255,0.4)', fontSize:11, fontFamily:'var(--font-mono)' }}>00:00</span>
+                    <div style={{ flex:1, height:3, background:'rgba(255,255,255,0.15)', borderRadius:10 }}/>
+                    <span style={{ color:'rgba(255,255,255,0.4)', fontSize:11, fontFamily:'var(--font-mono)' }}>{mod.dur}</span>
+                  </div>
+                </div>
+              )}
+
+              {mod.type === 'pdf' && (
+                <div style={{
+                  background:'#f0f0f0', borderRadius:'var(--r3)',
+                  padding:'32px', minHeight:300,
+                  display:'flex', alignItems:'center', justifyContent:'center',
+                  marginBottom:12,
+                }}>
+                  <div style={{ background:'#fff', borderRadius:'var(--r2)', padding:'36px 48px', maxWidth:480, width:'100%', boxShadow:'0 4px 20px rgba(0,0,0,0.12)' }}>
+                    <div style={{ textAlign:'center', marginBottom:20 }}>
+                      <Icon name="FileText" size={36} color="var(--red)"/>
+                      <div style={{ fontSize:16, fontWeight:800, color:'#002060', marginTop:10 }}>{mod.title}</div>
+                      <div style={{ fontSize:11, color:'#888', marginTop:6 }}>{mod.dur}</div>
+                    </div>
+                    <div style={{ fontSize:12, color:'#444', lineHeight:1.7 }}>
+                      This PDF document covers {mod.title.toLowerCase()} for {course.category} training. Read all sections carefully before attempting the quiz.
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {mod.type === 'quiz' && (
+                <div style={{ background:'var(--bg2)', border:'1px solid var(--border)', borderRadius:'var(--r3)', padding:'24px', marginBottom:12 }}>
+                  <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:16 }}>
+                    <Icon name="Pencil" size={18} color="var(--amber)"/>
+                    <div style={{ fontSize:15, fontWeight:700, color:'var(--text)' }}>{mod.title}</div>
+                  </div>
+                  {(mod.questions?.slice(0,2) || []).map((q, qi) => (
+                    <div key={qi} style={{ marginBottom:16, padding:'14px', background:'var(--bg3)', borderRadius:'var(--r2)' }}>
+                      <div style={{ fontSize:13, fontWeight:600, color:'var(--text)', marginBottom:10 }}>Q{qi+1}: {q.q}</div>
+                      {q.opts.map((opt, oi) => (
+                        <div key={oi} style={{ display:'flex', alignItems:'center', gap:8, padding:'6px', borderRadius:6, marginBottom:4, fontSize:12, color:'var(--text2)' }}>
+                          <div style={{ width:16, height:16, borderRadius:'50%', border:'2px solid var(--border2)', flexShrink:0 }}/>
+                          {opt}
+                        </div>
+                      ))}
+                    </div>
+                  ))}
+                  {(mod.questions?.length || 0) > 2 && (
+                    <div style={{ fontSize:12, color:'var(--text3)', textAlign:'center', marginTop:8 }}>
+                      +{(mod.questions?.length||0)-2} more questions
+                    </div>
+                  )}
+                  {(!mod.questions || mod.questions.length === 0) && (
+                    <div style={{ textAlign:'center', padding:'20px', color:'var(--text3)', fontSize:12 }}>
+                      No questions added yet
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Module title bar */}
+              <div style={{ display:'flex', alignItems:'center', gap:10, padding:'12px 14px', background:'var(--bg2)', borderRadius:'var(--r2)', border:'1px solid var(--border)' }}>
+                <div style={{ width:32, height:32, borderRadius:8, background:typeDim[mod.type]||'var(--bg4)', display:'flex', alignItems:'center', justifyContent:'center' }}>
+                  <Icon name={typeIcon[mod.type]||'Book'} size={14} color={typeColor[mod.type]||'var(--text3)'}/>
+                </div>
+                <div style={{ flex:1 }}>
+                  <div style={{ fontSize:13, fontWeight:700, color:'var(--text)' }}>{mod.title}</div>
+                  <div style={{ fontSize:11, color:'var(--text3)' }}>{mod.type} · {mod.dur}</div>
+                </div>
+                <div style={{ display:'flex', gap:6 }}>
+                  {activeModule > 0 && (
+                    <button className="btn btn-ghost btn-sm" onClick={() => setActiveModule(i => i-1)}>
+                      <Icon name="ArrowLeft" size={12}/> Prev
+                    </button>
+                  )}
+                  {activeModule < course.modules.length-1 && (
+                    <button className="btn btn-primary btn-sm" onClick={() => setActiveModule(i => i+1)}>
+                      Next <Icon name="ChevronRight" size={12}/>
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {course.modules.length === 0 && (
+            <div className="empty-state card">
+              <div className="empty-icon">📚</div>
+              <div>No modules in this course yet</div>
+            </div>
+          )}
+        </div>
+
+        {/* Right — module list */}
+        <div>
+          <div className="card">
+            <div style={{ fontWeight:700, fontSize:13, color:'var(--text)', marginBottom:14 }}>
+              Course Contents
+            </div>
+            {course.modules.map((m, i) => (
+              <div key={i}
+                onClick={() => setActiveModule(i)}
+                style={{
+                  display:'flex', alignItems:'center', gap:10,
+                  padding:'10px 10px', borderRadius:'var(--r)',
+                  background: activeModule===i ? typeDim[m.type]||'var(--blue-dim)' : 'transparent',
+                  border:`1px solid ${activeModule===i ? (typeColor[m.type]||'var(--brand)')+'33' : 'transparent'}`,
+                  cursor:'pointer', marginBottom:5, transition:'all 0.13s',
+                }}
+              >
+                <div style={{
+                  width:28, height:28, borderRadius:7, flexShrink:0,
+                  background: activeModule===i ? (typeColor[m.type]||'var(--brand)') : 'var(--bg4)',
+                  display:'flex', alignItems:'center', justifyContent:'center',
+                }}>
+                  <Icon
+                    name={typeIcon[m.type]||'Book'}
+                    size={13}
+                    color={activeModule===i ? '#fff' : 'var(--text3)'}
+                  />
+                </div>
+                <div style={{ flex:1, minWidth:0 }}>
+                  <div style={{
+                    fontSize:12.5, fontWeight:activeModule===i?700:500,
+                    color:activeModule===i?(typeColor[m.type]||'var(--brand)'):'var(--text)',
+                    overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap',
+                  }}>
+                    {m.title || `Module ${i+1}`}
+                  </div>
+                  <div style={{ fontSize:10, color:'var(--text3)' }}>{m.dur}</div>
+                </div>
+                <span style={{ fontSize:9, fontWeight:700, textTransform:'uppercase', color:typeColor[m.type]||'var(--text3)', flexShrink:0 }}>
+                  {m.type}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ── Main CoursesPage ──────────────────────────────────────────────
 export default function CoursesPage() {
-  const [courses,  setCourses]  = useState(INITIAL_COURSES);
-  const [editing,  setEditing]  = useState(null);
-  const [creating, setCreating] = useState(false);
-  const [filter,   setFilter]   = useState('All');
-  const [search,   setSearch]   = useState('');
+  const [courses,       setCourses]       = useState(INITIAL_COURSES);
+  const [editing,       setEditing]       = useState(null);
+  const [creating,      setCreating]      = useState(false);
+  const [filter,        setFilter]        = useState('All');
+  const [search,        setSearch]        = useState('');
+  const [previewCourse, setPreviewCourse] = useState(null);
 
   const handleSave = (course) => {
     setCourses(prev => {
@@ -686,8 +921,9 @@ export default function CoursesPage() {
     setCreating(false);
   };
 
-  if (creating)         return <CourseEditor course={null}    onSave={handleSave} onBack={()=>setCreating(false)}/>;
-  if (editing)          return <CourseEditor course={editing} onSave={handleSave} onBack={()=>setEditing(null)}/>;
+  if (creating)      return <CourseEditor course={null}    onSave={handleSave} onBack={()=>setCreating(false)}/>;
+  if (editing)       return <CourseEditor course={editing} onSave={handleSave} onBack={()=>setEditing(null)}/>;
+  if (previewCourse) return <CoursePreview course={previewCourse} onBack={()=>setPreviewCourse(null)} onEdit={c=>{setPreviewCourse(null);setEditing(c);}}/>;
 
   const FILTERS = ['All','Draft','Pending Approval','Published'];
   const filtered = courses.filter(c => {
@@ -765,102 +1001,178 @@ export default function CoursesPage() {
             <div>No courses found</div>
           </div>
         ) : filtered.map(c => {
-          const st = STATUS_STYLES[c.status] || STATUS_STYLES['Draft'];
-          const videoCount = c.modules.filter(m=>m.type==='video').length;
-          const pdfCount   = c.modules.filter(m=>m.type==='pdf').length;
-          const quizCount  = c.modules.filter(m=>m.type==='quiz').length;
+          const st         = STATUS_STYLES[c.status] || STATUS_STYLES['Draft'];
+          const videoCount = c.modules.filter(m => m.type==='video').length;
+          const pdfCount   = c.modules.filter(m => m.type==='pdf').length;
+          const quizCount  = c.modules.filter(m => m.type==='quiz').length;
 
           return (
             <div key={c.id} style={{
-              background:'var(--bg2)', border:'1px solid var(--border)',
-              borderRadius:'var(--r3)', padding:'18px 20px',
-              boxShadow:'var(--shadow-sm)', display:'flex',
-              alignItems:'center', gap:18, transition:'all 0.15s',
+              background:'var(--bg2)',
+              border:`1px solid var(--border)`,
+              borderLeft:`4px solid ${
+                c.status==='Published'       ? 'var(--green)'
+                : c.status==='Pending Approval' ? 'var(--amber)'
+                : c.status==='Rejected'      ? 'var(--red)'
+                : 'var(--bg5)'
+              }`,
+              borderRadius:'var(--r3)',
+              padding:'20px 22px',
+              boxShadow:'var(--shadow-sm)',
+              transition:'all 0.15s',
             }}
               onMouseEnter={e => e.currentTarget.style.boxShadow='var(--shadow-md)'}
               onMouseLeave={e => e.currentTarget.style.boxShadow='var(--shadow-sm)'}
             >
-              {/* Icon */}
-              <div style={{
-                width:48, height:48, borderRadius:12, flexShrink:0,
-                background: c.status==='Published' ? 'var(--green-dim)'
-                  : c.status==='Pending Approval'  ? 'var(--amber-dim)'
-                  : 'var(--bg4)',
-                display:'flex', alignItems:'center', justifyContent:'center',
-                border:`1.5px solid ${
-                  c.status==='Published' ? 'rgba(22,163,74,0.2)'
-                  : c.status==='Pending Approval' ? 'rgba(217,119,6,0.2)'
-                  : 'var(--border)'
-                }`,
-              }}>
-                <Icon
-                  name="Book"
-                  size={20}
-                  color={
-                    c.status==='Published' ? 'var(--green)'
+              {/* Top row */}
+              <div style={{ display:'flex', alignItems:'flex-start', gap:16, marginBottom:12 }}>
+
+                {/* Icon */}
+                <div style={{
+                  width:48, height:48, borderRadius:12, flexShrink:0,
+                  background: c.status==='Published'       ? 'var(--green-dim)'
+                    : c.status==='Pending Approval'        ? 'var(--amber-dim)'
+                    : c.status==='Rejected'                ? 'var(--red-dim)'
+                    : 'var(--bg4)',
+                  display:'flex', alignItems:'center', justifyContent:'center',
+                  border:`1.5px solid ${
+                    c.status==='Published'       ? 'rgba(22,163,74,0.2)'
+                    : c.status==='Pending Approval' ? 'rgba(217,119,6,0.2)'
+                    : c.status==='Rejected'      ? 'rgba(220,38,38,0.2)'
+                    : 'var(--border)'
+                  }`,
+                }}>
+                  <Icon name="Book" size={20} color={
+                    c.status==='Published'       ? 'var(--green)'
                     : c.status==='Pending Approval' ? 'var(--amber)'
+                    : c.status==='Rejected'      ? 'var(--red)'
                     : 'var(--text3)'
-                  }
-                />
-              </div>
-
-              {/* Info */}
-              <div style={{ flex:1, minWidth:0 }}>
-                <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:6 }}>
-                  <span style={{ fontSize:14.5, fontWeight:800, color:'var(--text)', letterSpacing:'-0.2px' }}>
-                    {c.title}
-                  </span>
-                  <span className={`badge ${st.cls}`}>
-                    <Icon name={st.icon} size={9} strokeWidth={2.5}/> {c.status}
-                  </span>
+                  }/>
                 </div>
-                <div style={{ display:'flex', gap:8, flexWrap:'wrap' }}>
-                  <span className="chip"><Icon name="Layers" size={10}/> {c.category}</span>
-                  <span className="chip"><Icon name="Book"   size={10}/> {c.modules.length} modules</span>
-                  {videoCount>0 && <span className="chip"><Icon name="Video"    size={10}/> {videoCount} videos</span>}
-                  {pdfCount>0   && <span className="chip"><Icon name="FileText" size={10}/> {pdfCount} PDFs</span>}
-                  {quizCount>0  && <span className="chip"><Icon name="Pencil"   size={10}/> {quizCount} quizzes</span>}
-                  {c.enrolled>0 && <span className="chip"><Icon name="Users"    size={10}/> {c.enrolled} enrolled</span>}
+
+                {/* Title + status + actions */}
+                <div style={{ flex:1, minWidth:0 }}>
+                  <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', gap:10, marginBottom:6 }}>
+                    <div style={{ display:'flex', alignItems:'center', gap:10, minWidth:0 }}>
+                      <span style={{ fontSize:15, fontWeight:800, color:'var(--text)', letterSpacing:'-0.3px', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
+                        {c.title}
+                      </span>
+                      <span className={`badge ${st.cls}`} style={{ flexShrink:0 }}>
+                        <Icon name={st.icon} size={9} strokeWidth={2.5}/> {c.status}
+                      </span>
+                    </div>
+
+                    {/* Actions — NO analytics */}
+                    <div style={{ display:'flex', gap:6, flexShrink:0 }}>
+                      {(c.status === 'Draft' || c.status === 'Rejected') && (
+                        <button className="btn btn-primary btn-sm" onClick={() => setEditing(c)}>
+                          <Icon name="Edit" size={12}/> Edit
+                        </button>
+                      )}
+                      {c.status === 'Published' && (
+                        <>
+                          <button className="btn btn-ghost btn-sm" onClick={() => setPreviewCourse(c)}>
+                            <Icon name="Eye" size={12}/> Preview
+                          </button>
+                          <button className="btn btn-ghost btn-sm" onClick={() => setEditing(c)}>
+                            <Icon name="Edit" size={12}/> Edit
+                          </button>
+                        </>
+                      )}
+                      {c.status === 'Pending Approval' && (
+                        <button className="btn btn-ghost btn-sm" onClick={() => setPreviewCourse(c)}>
+                          <Icon name="Eye" size={12}/> Preview
+                        </button>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Description */}
+                  <div style={{ fontSize:12.5, color:'var(--text2)', lineHeight:1.55, marginBottom:10, maxWidth:680 }}>
+                    {c.description || `This course covers essential ${c.category} training content for bus drivers. Includes ${c.modules.length} modules with videos, PDFs and assessments.`}
+                  </div>
+
+                  {/* Chips */}
+                  <div style={{ display:'flex', gap:7, flexWrap:'wrap', alignItems:'center' }}>
+                    <span className="chip" style={{ fontSize:10 }}>
+                      <Icon name="Layers" size={9}/> {c.category}
+                    </span>
+                    <span className="chip" style={{ fontSize:10 }}>
+                      <Icon name="Book" size={9}/> {c.modules.length} modules
+                    </span>
+                    {videoCount > 0 && (
+                      <span className="chip" style={{ fontSize:10 }}>
+                        <Icon name="Video" size={9}/> {videoCount} video{videoCount>1?'s':''}
+                      </span>
+                    )}
+                    {pdfCount > 0 && (
+                      <span className="chip" style={{ fontSize:10 }}>
+                        <Icon name="FileText" size={9}/> {pdfCount} PDF{pdfCount>1?'s':''}
+                      </span>
+                    )}
+                    {quizCount > 0 && (
+                      <span className="chip" style={{ fontSize:10 }}>
+                        <Icon name="Pencil" size={9}/> {quizCount} quiz{quizCount>1?'zes':''}
+                      </span>
+                    )}
+                    {c.enrolled > 0 && (
+                      <span className="chip" style={{ fontSize:10 }}>
+                        <Icon name="Users" size={9}/> {c.enrolled} enrolled
+                      </span>
+                    )}
+                    {c.status === 'Published' && c.approvedAt && (
+                      <span style={{ fontSize:10, color:'var(--green)', fontWeight:600, display:'flex', alignItems:'center', gap:4 }}>
+                        <Icon name="Check" size={9} color="var(--green)" strokeWidth={2.5}/>
+                        Approved {c.approvedAt}
+                      </span>
+                    )}
+                    {c.status === 'Pending Approval' && (
+                      <span style={{ fontSize:10, color:'var(--amber)', fontWeight:600, display:'flex', alignItems:'center', gap:4 }}>
+                        <Icon name="Clock" size={9} color="var(--amber)"/>
+                        Awaiting admin review · Submitted {c.submittedAt}
+                      </span>
+                    )}
+                    {c.status === 'Rejected' && (
+                      <span style={{ fontSize:10, color:'var(--red)', fontWeight:600, display:'flex', alignItems:'center', gap:4 }}>
+                        <Icon name="X" size={9} color="var(--red)"/>
+                        Rejected — please edit and resubmit
+                      </span>
+                    )}
+                  </div>
                 </div>
               </div>
 
-              {/* Status info */}
-              <div style={{ textAlign:'right', flexShrink:0 }}>
-                {c.status === 'Pending Approval' && (
-                  <div style={{ fontSize:11, color:'var(--amber)', fontWeight:600, marginBottom:4 }}>
-                    <Icon name="Clock" size={10}/> Awaiting admin review
-                  </div>
-                )}
-                {c.status === 'Published' && (
-                  <div style={{ fontSize:11, color:'var(--green)', fontWeight:600, marginBottom:4 }}>
-                    <Icon name="Zap" size={10}/> Live · {c.enrolled} enrolled
-                  </div>
-                )}
-                {c.approvedAt && (
-                  <div style={{ fontSize:10, color:'var(--text3)' }}>
-                    Approved {c.approvedAt}
-                  </div>
-                )}
-              </div>
-
-              {/* Actions */}
-              <div style={{ display:'flex', gap:8, flexShrink:0 }}>
-                {c.status === 'Draft' && (
-                  <button className="btn btn-primary btn-sm" onClick={() => setEditing(c)}>
-                    <Icon name="Edit" size={12}/> Edit
-                  </button>
-                )}
-                {c.status === 'Pending Approval' && (
-                  <button className="btn btn-ghost btn-sm" onClick={() => setEditing(c)}>
-                    <Icon name="Eye" size={12}/> View
-                  </button>
-                )}
-                {c.status === 'Published' && (
-                  <button className="btn btn-ghost btn-sm">
-                    <Icon name="BarChart" size={12}/> Analytics
-                  </button>
-                )}
-              </div>
+              {/* Module preview bar */}
+              {c.modules.length > 0 && (
+                <div style={{
+                  marginTop:12, paddingTop:12,
+                  borderTop:'1px solid var(--border)',
+                  display:'flex', gap:6, flexWrap:'wrap',
+                }}>
+                  {c.modules.map((mod, mi) => {
+                    const modIcon  = mod.type==='video' ? 'Video' : mod.type==='pdf' ? 'FileText' : 'Pencil';
+                    const modColor = mod.type==='video' ? 'var(--blue)' : mod.type==='pdf' ? 'var(--red)' : 'var(--amber)';
+                    const modDim   = mod.type==='video' ? 'var(--blue-dim)' : mod.type==='pdf' ? 'var(--red-dim)' : 'var(--amber-dim)';
+                    return (
+                      <div key={mi} style={{
+                        display:'flex', alignItems:'center', gap:5,
+                        padding:'4px 10px', borderRadius:6,
+                        background: modDim,
+                        border:`1px solid ${modColor}22`,
+                        fontSize:11, fontWeight:600, color: modColor,
+                      }}>
+                        <Icon name={modIcon} size={10} color={modColor}/>
+                        {mod.title || `Module ${mi+1}`}
+                        {mod.dur && (
+                          <span style={{ fontSize:10, color:`${modColor}99`, fontWeight:400 }}>
+                            · {mod.dur}
+                          </span>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
             </div>
           );
         })}
