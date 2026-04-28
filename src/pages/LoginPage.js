@@ -128,24 +128,6 @@ export default function LoginPage({ onSuccess }) {
             </div>
             <div className="auth-sub">Use your assigned username and password to access your portal.</div>
 
-            {/* Credentials hint */}
-            <div style={{ background:'var(--bg3)', border:'1px solid var(--border)', borderRadius:'var(--r2)', padding:'12px 14px', marginBottom:20 }}>
-              <div style={{ fontSize:10, fontWeight:700, color:'var(--text3)', textTransform:'uppercase', letterSpacing:'0.6px', marginBottom:8 }}>
-                <Icon name="Key" size={10}/> Demo Credentials
-              </div>
-              {[
-                { role:'Admin',   user:'Admin',   pass:'admin123',   color:'var(--blue)',  dim:'var(--blue-dim)',  av:'AU' },
-                { role:'Trainer', user:'Trainer', pass:'trainer123', color:'var(--teal)',  dim:'var(--teal-dim)',  av:'EM' },
-                { role:'Driver',  user:'Driver',  pass:'driver123',  color:'var(--amber)', dim:'var(--amber-dim)', av:'MO' },
-              ].map(c=>(
-                <div key={c.role} style={{ display:'flex', alignItems:'center', gap:8, padding:'6px 8px', background:'var(--bg2)', border:'1px solid var(--border)', borderRadius:'var(--r)', marginBottom:4 }}>
-                  <div style={{ width:24, height:24, borderRadius:6, background:c.dim, color:c.color, border:`1px solid ${c.color}33`, display:'flex', alignItems:'center', justifyContent:'center', fontSize:9, fontWeight:700, fontFamily:'var(--font-mono)', flexShrink:0 }}>{c.av}</div>
-                  <span style={{ fontSize:12, fontWeight:700, color:'var(--text)' }}>{c.role}</span>
-                  <span style={{ fontSize:11, color:'var(--text3)', fontFamily:'var(--font-mono)' }}>{c.user} · {c.pass}</span>
-                </div>
-              ))}
-            </div>
-
             <form className="auth-form" onSubmit={handleSubmit}>
               {error && <div className="auth-error"><Icon name="Alert" size={14} color="var(--red)"/>{error}</div>}
               <div>
