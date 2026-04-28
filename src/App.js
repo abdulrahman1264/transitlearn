@@ -55,12 +55,15 @@ function AppInner() {
   // ── Logged in ─────────────────────────────────
   const renderPage = () => {
     if (authPortal === 'admin') {
-      if (view === 'dashboard')    return <AdminDashboard onView={setView}/>;
-      if (view === 'courses')      return <AdminCoursesPage/>;
-      if (view === 'drivers')      return <DriversPage/>;
-      if (view === 'trainers')     return <TrainersPage/>;
-      if (view === 'usermgmt')     return <UserMgmtPage/>;
-      if (view === 'depots')       return <DepotsPage/>;
+      if (view === 'dashboard')     return <AdminDashboard onView={setView}/>;
+      if (view === 'courses')       return <AdminCoursesPage/>;
+      if (view === 'drivers')       return <DriversPage/>;
+      if (view === 'trainers')      return <TrainersPage/>;
+      if (view === 'usermgmt')      return <UserMgmtPage/>;
+      if (view === 'registrations') return <RegistrationsPage/>;
+      if (view === 'videomatrix')   return <VideoMatrixPage/>;
+      if (view === 'batchassign')   return <BatchAssignPage/>;
+      if (view === 'depots')        return <DepotsPage/>;
       if (view === 'drm')          return <DrmPage/>;
       if (view === 'reports')      return <ReportsPage/>;
       if (view === 'audit')        return <AuditPage/>;
