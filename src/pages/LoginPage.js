@@ -8,13 +8,6 @@ const PORTAL_INFO = {
   driver:  { color:'var(--amber)', dim:'var(--amber-dim)', label:'Driver Portal',  icon:'Bus',      badge:'amber' },
 };
 
-const STATS = [
-  { icon:'Users',  label:'Active Drivers',   val:'567', color:'var(--blue)'  },
-  { icon:'Book',   label:'Training Courses', val:'6',   color:'var(--teal)'  },
-  { icon:'Shield', label:'Compliance Rate',  val:'91%', color:'var(--green)' },
-  { icon:'Trophy', label:'Certified Drivers',val:'284', color:'var(--amber)' },
-];
-
 export default function LoginPage({ onSuccess }) {
   const { login, register } = useAuth();
   const [tab,      setTab]      = useState('signin');
@@ -76,10 +69,10 @@ export default function LoginPage({ onSuccess }) {
   const info = detected ? PORTAL_INFO[detected] : null;
 
   return (
-    <div className="auth-root">
+    <div className="auth-root" style={{ display:'flex', alignItems:'center', justifyContent:'center', minHeight:'100vh', background:'var(--bg)' }}>
 
       {/* Left Panel */}
-      <div className="auth-left" style={{ width:480, minWidth:480 }}>
+      <div className="auth-left" style={{ width:'100%', maxWidth:440, background:'var(--bg2)', borderRadius:'var(--r3)', boxShadow:'var(--shadow-lg)', padding:'32px', border:'1px solid var(--border)' }}>
 
         <div className="auth-logo">
           <div className="auth-logo-mark">
@@ -235,38 +228,6 @@ export default function LoginPage({ onSuccess }) {
         )}
       </div>
 
-      {/* Right Panel */}
-      <div className="auth-right" style={{ background: detected==='trainer'?'linear-gradient(135deg,var(--teal-dim) 0%,var(--bg) 60%,var(--bg3) 100%)':detected==='driver'?'linear-gradient(135deg,var(--amber-dim) 0%,var(--bg) 60%,var(--bg3) 100%)':'linear-gradient(135deg,var(--blue-dim) 0%,var(--bg) 60%,var(--bg3) 100%)', transition:'background 0.4s' }}>
-        <div style={{ position:'absolute', width:420, height:420, borderRadius:'50%', background: info?`${info.color}08`:'rgba(27,110,243,0.06)', top:-120, right:-100 }}/>
-        <div className="auth-right-inner">
-          <div style={{ width:88, height:88, borderRadius:28, background:info?info.dim:'var(--blue-dim)', border:`2px solid ${info?info.color:'var(--blue)'}33`, display:'flex', alignItems:'center', justifyContent:'center', margin:'0 auto 20px', boxShadow:`0 12px 32px ${info?info.color:'var(--blue)'}22`, transition:'all 0.3s' }}>
-            <Icon name={info?info.icon:'Bus'} size={40} color={info?info.color:'var(--blue)'} strokeWidth={1.5}/>
-          </div>
-          <div style={{ fontSize:22, fontWeight:800, color:'var(--text)', marginBottom:8, letterSpacing:'-0.5px' }}>
-            {tab==='register' ? 'Join TransitLearn' : info ? info.label : 'TransitLearn Platform'}
-          </div>
-          <div style={{ fontSize:13, color:'var(--text2)', marginBottom:32, maxWidth:300, lineHeight:1.6 }}>
-            {tab==='register' ? 'Register with your batch code to access your assigned training courses and materials.' :
-             detected==='admin' ? 'Full platform control — manage drivers, trainers, compliance and DRM keys.' :
-             detected==='trainer' ? 'Build courses, run BTW sessions and assess driver skills.' :
-             detected==='driver' ? 'Access training courses, complete quizzes and track compliance.' :
-             "Professional bus driver training platform for Dubai's transit network."}
-          </div>
-          <div style={{ display:'flex', flexDirection:'column', gap:10, alignItems:'center' }}>
-            {STATS.map(s=>(
-              <div key={s.label} className="auth-stat-card" style={{ width:240 }}>
-                <div style={{ width:36, height:36, borderRadius:10, background:`${s.color}18`, display:'flex', alignItems:'center', justifyContent:'center' }}>
-                  <Icon name={s.icon} size={16} color={s.color}/>
-                </div>
-                <div>
-                  <div style={{ fontSize:20, fontWeight:800, color:'var(--text)', lineHeight:1 }}>{s.val}</div>
-                  <div style={{ fontSize:11, color:'var(--text3)', fontWeight:600 }}>{s.label}</div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
       </div>
-    </div>
   );
 }
