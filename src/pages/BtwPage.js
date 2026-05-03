@@ -19,8 +19,8 @@ function BtwScorer({ session, onBack }) {
   const [ratings, setRatings] = useState(
     Object.fromEntries(BTW_SKILLS.map(s => [s, 0]))
   );
-  const [notes,   setNotes]   = useState('');
-  const [saved,   setSaved]   = useState(false);
+  const [notes, setNotes] = useState('');
+  const [saved, setSaved] = useState(false);
 
   const filled   = Object.values(ratings).filter(v => v > 0).length;
   const avgScore = filled > 0
@@ -68,8 +68,6 @@ function BtwScorer({ session, onBack }) {
       </div>
 
       <div className="g2-1" style={{ alignItems:'start' }}>
-
-        {/* Scorer */}
         <div className="card">
           <div className="sec-head mb16">
             <div>
@@ -134,21 +132,18 @@ function BtwScorer({ session, onBack }) {
           </div>
         </div>
 
-        {/* Right panel */}
         <div style={{ display:'flex', flexDirection:'column', gap:16 }}>
-
-          {/* Session info */}
           <div className="card card-accent-blue">
             <div className="flex items-center gap8 mb14">
               <Icon name="Car" size={15} color="var(--blue)"/>
               <span style={{ fontWeight:700, fontSize:14, color:'var(--text)' }}>Session Info</span>
             </div>
             {[
-              { key:'Driver',   val: session.driver,  icon:'Users'         },
-              { key:'Trainer',  val: session.trainer, icon:'GraduationCap' },
-              { key:'Date',     val: session.date,    icon:'Calendar'      },
-              { key:'Route',    val: session.route,   icon:'Map'           },
-              { key:'Duration', val: `${session.dur} min`, icon:'Clock'   },
+              { key:'Driver',   val: session.driver,       icon:'Users'         },
+              { key:'Trainer',  val: session.trainer,      icon:'GraduationCap' },
+              { key:'Date',     val: session.date,         icon:'Calendar'      },
+              { key:'Route',    val: session.route,        icon:'Map'           },
+              { key:'Duration', val: `${session.dur} min`, icon:'Clock'         },
             ].map(r => (
               <div key={r.key} className="kv-row">
                 <span className="kv-key flex items-center gap4">
@@ -159,18 +154,17 @@ function BtwScorer({ session, onBack }) {
             ))}
           </div>
 
-          {/* Scoring guide */}
           <div className="card">
             <div className="flex items-center gap8 mb14">
               <Icon name="Info" size={15} color="var(--text3)"/>
               <span style={{ fontWeight:700, fontSize:14, color:'var(--text)' }}>Scoring Guide</span>
             </div>
             {[
-              { dot:'high', score:'5 — Excellent',   desc:'Exceeds standard consistently'    },
-              { dot:'high', score:'4 — Good',         desc:'Meets standard with confidence'   },
-              { dot:'mid',  score:'3 — Satisfactory', desc:'Meets minimum standard'           },
-              { dot:'mid',  score:'2 — Developing',   desc:'Below standard, needs coaching'   },
-              { dot:'low',  score:'1 — Unsatisfactory',desc:'Fails to meet standard'          },
+              { dot:'high', score:'5 — Excellent',      desc:'Exceeds standard consistently'  },
+              { dot:'high', score:'4 — Good',            desc:'Meets standard with confidence' },
+              { dot:'mid',  score:'3 — Satisfactory',   desc:'Meets minimum standard'         },
+              { dot:'mid',  score:'2 — Developing',     desc:'Below standard, needs coaching' },
+              { dot:'low',  score:'1 — Unsatisfactory', desc:'Fails to meet standard'         },
             ].map(g => (
               <div key={g.score} className="flex items-center gap10"
                 style={{ padding:'7px 0', borderBottom:'1px solid var(--border)' }}>
@@ -187,28 +181,20 @@ function BtwScorer({ session, onBack }) {
               </div>
             </div>
           </div>
-
         </div>
       </div>
-      </div>
+    </div>
   );
 }
 
 export default function BtwPage({ portal, user }) {
   const [selected, setSelected] = useState(null);
-  const isTrainer = portal === 'trainer';
-  const isDriver  = portal === 'driver';
+  const isTrainer  = portal === 'trainer';
+  const isDriver   = portal === 'driver';
   const driverName = user?.name || 'Marcus Okafor';
 
-  // Driver only sees their own sessions
   const sessions = isDriver
     ? BTW_SESSIONS.filter(s => s.driver === driverName)
-    : BTW_SESSIONS;
-  const isDriver  = portal === 'driver';
-
-  // Driver only sees their own sessions
-  const sessions = isDriver
-    ? BTW_SESSIONS.filter(s => s.driver === 'Marcus Okafor')
     : BTW_SESSIONS;
 
   if (selected && isTrainer) {
@@ -218,11 +204,10 @@ export default function BtwPage({ portal, user }) {
   return (
     <div className="fade-in">
 
-      {/* Header */}
       <div className="flex items-center justify-between mb24">
         <div>
           <div style={{ fontFamily:'var(--font-head)', fontSize:15, fontWeight:800, color:'var(--text)' }}>
-            {BTW_SESSIONS.length} sessions
+            {sessions.length} sessions
           </div>
           <div style={{ fontSize:12, color:'var(--text3)', marginTop:2 }}>
             {isTrainer ? 'Manage and evaluate BTW sessions' : 'Your behind-the-wheel training log'}
@@ -235,26 +220,20 @@ export default function BtwPage({ portal, user }) {
         )}
       </div>
 
-      {/* Summary */}
       <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:12, marginBottom:24 }}>
         {[
-          { label:'Total Sessions', val: sessions.length,                                          color:'blue',  icon:'Car'         },
-          { label:'Completed',      val: sessions.filter(s=>s.status==='Completed').length,        color:'green', icon:'Check'       },
-          { label:'Pending',        val: sessions.filter(s=>s.status==='Pending Sign-off').length, color:'amber', icon:'Clock'       },
+          { label:'Total Sessions', val: sessions.length,                                                                                                              color:'blue',  icon:'Car'      },
+          { label:'Completed',      val: sessions.filter(s=>s.status==='Completed').length,                                                                            color:'green', icon:'Check'    },
+          { label:'Pending',        val: sessions.filter(s=>s.status==='Pending Sign-off').length,                                                                     color:'amber', icon:'Clock'    },
           { label:'Avg Score',      val: sessions.length > 0 ? Math.round(sessions.reduce((a,s)=>a+s.score,0)/sessions.length)+'%' : '0%', color:'teal', icon:'BarChart' },
         ].map(t => (
           <div key={t.label} style={{
             background:'var(--bg2)', border:'1px solid var(--border)',
             borderRadius:'var(--r2)', padding:'14px 16px',
-            display:'flex', alignItems:'center', gap:12,
-            boxShadow:'var(--shadow-sm)'
+            display:'flex', alignItems:'center', gap:12, boxShadow:'var(--shadow-sm)',
           }}>
-            <div style={{
-              width:36, height:36, borderRadius:10,
-              background:`var(--${t.color}-dim)`,
-              display:'flex', alignItems:'center', justifyContent:'center'
-            }}>
-              <Icon name={t.icon} size={16} color={`var(--${t.color})`} />
+            <div style={{ width:36, height:36, borderRadius:10, background:`var(--${t.color}-dim)`, display:'flex', alignItems:'center', justifyContent:'center' }}>
+              <Icon name={t.icon} size={16} color={`var(--${t.color})`}/>
             </div>
             <div>
               <div style={{ fontSize:22, fontFamily:'var(--font-head)', fontWeight:800, color:'var(--text)', lineHeight:1 }}>{t.val}</div>
@@ -264,7 +243,6 @@ export default function BtwPage({ portal, user }) {
         ))}
       </div>
 
-      {/* Sessions table */}
       <div className="tbl-wrap">
         <table>
           <thead>
@@ -284,9 +262,7 @@ export default function BtwPage({ portal, user }) {
               <tr key={s.id}>
                 <td>
                   <div className="flex items-center gap8">
-                    <div className="avatar-sm">
-                      {s.driver.split(' ').map(n=>n[0]).join('')}
-                    </div>
+                    <div className="avatar-sm">{s.driver.split(' ').map(n=>n[0]).join('')}</div>
                     <span style={{ fontWeight:600, color:'var(--text)' }}>{s.driver}</span>
                   </div>
                 </td>
@@ -309,17 +285,14 @@ export default function BtwPage({ portal, user }) {
                   </div>
                 </td>
                 <td>
-                  <span className="chip">
-                    <Icon name="Clock" size={10}/> {s.dur} min
-                  </span>
+                  <span className="chip"><Icon name="Clock" size={10}/> {s.dur} min</span>
                 </td>
                 <td>
                   <span className={`badge ${scoreCls(s.score)}`}>
-                    <Icon name="Star" size={10} strokeWidth={2}/>
-                    {s.score}%
+                    <Icon name="Star" size={10} strokeWidth={2}/> {s.score}%
                   </span>
                 </td>
-                <td><StatusBadge status={s.status} /></td>
+                <td><StatusBadge status={s.status}/></td>
                 {isTrainer && (
                   <td>
                     {s.status === 'Draft' ? (
@@ -338,6 +311,6 @@ export default function BtwPage({ portal, user }) {
           </tbody>
         </table>
       </div>
-      </div>
+    </div>
   );
 }
