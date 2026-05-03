@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 
 const AuthContext = createContext(null);
 
@@ -30,8 +30,18 @@ const INITIAL_REGISTRATIONS = [
 export function AuthProvider({ children }) {
   const [user,          setUser]          = useState(null);
   const [portal,        setPortal]        = useState(null);
-  const [registrations, setRegistrations] = useState(INITIAL_REGISTRATIONS);
-  const [drivers,       setDrivers]       = useState(USERS.driver);
+  const [registrations, setRegistrations] = useState(() => {
+    try {
+      const saved = localStorage.getItem('tl_registrations');
+      return saved ? JSON.parse(saved) : INITIAL_REGISTRATIONS;
+    } catch { return INITIAL_REGISTRATIONS; }
+  });
+  const [drivers, setDrivers] = useState(USERS.driver);
+
+  useEffect(() => {
+    try { localStorage.setItem('tl_registrations', JSON.stringify(registrations)); }
+    catch {}
+  }, [registrations]);
 
   const login = (portalId, username, password) => {
     const list = USERS[portalId] || [];

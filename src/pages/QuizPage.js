@@ -124,6 +124,6 @@ export default function QuizPage() {
 
         </div>
       </div>
-    </div>
+      </div>
   );
 }

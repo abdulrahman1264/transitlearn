@@ -190,13 +190,26 @@ function BtwScorer({ session, onBack }) {
 
         </div>
       </div>
-    </div>
+      </div>
   );
 }
 
-export default function BtwPage({ portal }) {
+export default function BtwPage({ portal, user }) {
   const [selected, setSelected] = useState(null);
   const isTrainer = portal === 'trainer';
+  const isDriver  = portal === 'driver';
+  const driverName = user?.name || 'Marcus Okafor';
+
+  // Driver only sees their own sessions
+  const sessions = isDriver
+    ? BTW_SESSIONS.filter(s => s.driver === driverName)
+    : BTW_SESSIONS;
+  const isDriver  = portal === 'driver';
+
+  // Driver only sees their own sessions
+  const sessions = isDriver
+    ? BTW_SESSIONS.filter(s => s.driver === 'Marcus Okafor')
+    : BTW_SESSIONS;
 
   if (selected && isTrainer) {
     return <BtwScorer session={selected} onBack={() => setSelected(null)} />;
@@ -225,10 +238,10 @@ export default function BtwPage({ portal }) {
       {/* Summary */}
       <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:12, marginBottom:24 }}>
         {[
-          { label:'Total Sessions', val: BTW_SESSIONS.length,                                          color:'blue',  icon:'Car'         },
-          { label:'Completed',      val: BTW_SESSIONS.filter(s=>s.status==='Completed').length,        color:'green', icon:'Check'       },
-          { label:'Pending',        val: BTW_SESSIONS.filter(s=>s.status==='Pending Sign-off').length, color:'amber', icon:'Clock'       },
-          { label:'Avg Score',      val: Math.round(BTW_SESSIONS.reduce((a,s)=>a+s.score,0)/BTW_SESSIONS.length)+'%', color:'teal', icon:'BarChart' },
+          { label:'Total Sessions', val: sessions.length,                                          color:'blue',  icon:'Car'         },
+          { label:'Completed',      val: sessions.filter(s=>s.status==='Completed').length,        color:'green', icon:'Check'       },
+          { label:'Pending',        val: sessions.filter(s=>s.status==='Pending Sign-off').length, color:'amber', icon:'Clock'       },
+          { label:'Avg Score',      val: sessions.length > 0 ? Math.round(sessions.reduce((a,s)=>a+s.score,0)/sessions.length)+'%' : '0%', color:'teal', icon:'BarChart' },
         ].map(t => (
           <div key={t.label} style={{
             background:'var(--bg2)', border:'1px solid var(--border)',
@@ -267,7 +280,7 @@ export default function BtwPage({ portal }) {
             </tr>
           </thead>
           <tbody>
-            {BTW_SESSIONS.map(s => (
+            {sessions.map(s => (
               <tr key={s.id}>
                 <td>
                   <div className="flex items-center gap8">
@@ -325,6 +338,6 @@ export default function BtwPage({ portal }) {
           </tbody>
         </table>
       </div>
-    </div>
+      </div>
   );
 }

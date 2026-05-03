@@ -132,7 +132,7 @@ export default function DriverDashboard({ onView }) {
           </div>
 
           <div style={{ display:'flex', flexDirection:'column', gap:12 }}>
-            {courses.map(c => {
+            {courses.slice(0,2).map(c => {
               const p = COURSE_PROGS[c.id] || 0;
               const overdue = c.id === 6;
               return (
@@ -327,6 +327,6 @@ export default function DriverDashboard({ onView }) {
 
         </div>
       </div>
-    </div>
+      </div>
   );
 }

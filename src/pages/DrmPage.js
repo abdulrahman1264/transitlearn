@@ -129,7 +129,7 @@ function KeyModal({ keyData, onClose, onSave }) {
           </button>
         </div>
       </div>
-    </div>
+      </div>
   );
 }
 
@@ -442,6 +442,6 @@ export default function DrmPage() {
           </tbody>
         </table>
       </div>
-    </div>
+      </div>
   );
 }

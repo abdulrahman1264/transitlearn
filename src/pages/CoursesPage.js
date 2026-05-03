@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react';
 import Icon from '../components/Icons';
+import { useLocalStorage } from '../hooks/useLocalStorage';
 
 // ── Mock initial courses ──────────────────────────────────────────
 const INITIAL_COURSES = [
@@ -747,12 +748,13 @@ function CourseEditor({ course, onSave, onBack }) {
       title,
       category,
       modules,
-      status:      submitForApproval ? 'Pending Approval' : 'Draft',
+      status:      submitForApproval ? 'Published' : 'Draft',
       submittedAt: submitForApproval ? new Date().toISOString().slice(0,10) : null,
+      approvedAt:  submitForApproval ? new Date().toISOString().slice(0,10) : null,
       enrolled:    course?.enrolled || 0,
       createdAt:   course?.createdAt || new Date().toISOString().slice(0,10),
     });
-    showToast(submitForApproval ? '✅ Submitted for admin approval!' : '✅ Draft saved!');
+    showToast(submitForApproval ? '✅ Course published successfully!' : '✅ Draft saved!');
     setSaving(false);
     setTimeout(() => onBack(), 1200);
   };
@@ -829,9 +831,10 @@ function CourseEditor({ course, onSave, onBack }) {
               {/* Add module buttons */}
               <div style={{ display:'flex', gap:6 }}>
                 {[
-                  { type:'video', icon:'Video',    label:'Add Video', color:'var(--blue)'  },
-                  { type:'pdf',   icon:'FileText', label:'Add PDF',   color:'var(--red)'   },
-                  { type:'quiz',  icon:'Pencil',   label:'Add Quiz',  color:'var(--amber)' },
+                  { type:'video', icon:'Video',    label:'Add Video',  color:'var(--blue)'   },
+                  { type:'pdf',   icon:'FileText', label:'Add PDF',    color:'var(--red)'    },
+                  { type:'pptx',  icon:'Layers',   label:'Add Slides', color:'var(--purple)' },
+                  { type:'quiz',  icon:'Pencil',   label:'Add Quiz',   color:'var(--amber)'  },
                 ].map(b => (
                   <button key={b.type} onClick={() => addModule(b.type)} style={{
                     display:'flex', alignItems:'center', gap:5,
@@ -926,7 +929,7 @@ function CourseEditor({ course, onSave, onBack }) {
               >
                 {saving
                   ? <><div className="spinner"/> Submitting...</>
-                  : <><Icon name="Send" size={13}/> Submit for Approval</>
+                  : <><Icon name="Check" size={13}/> Publish Course</>
                 }
               </button>
               <button
@@ -955,7 +958,8 @@ function CourseEditor({ course, onSave, onBack }) {
               { label:'Modules',  val: `${totalMods}`,              icon:'Book'     },
               { label:'Videos',   val: `${modules.filter(m=>m.type==='video').length}`, icon:'Video' },
               { label:'PDFs',     val: `${modules.filter(m=>m.type==='pdf').length}`,   icon:'FileText' },
-              { label:'Quizzes',  val: `${modules.filter(m=>m.type==='quiz').length}`,  icon:'Pencil' },
+              { label:'Slides',   val: `${modules.filter(m=>m.type==='pptx').length}`,  icon:'Layers'   },
+              { label:'Quizzes',  val: `${modules.filter(m=>m.type==='quiz').length}`,  icon:'Pencil'   },
             ].map(r => (
               <div key={r.label} className="kv-row">
                 <span className="kv-key" style={{ display:'flex', alignItems:'center', gap:5 }}>
@@ -1003,7 +1007,9 @@ function CoursePreview({ course, onBack, onEdit }) {
 
   const typeColor = { video:'var(--blue)', pdf:'var(--red)', quiz:'var(--amber)' };
   const typeDim   = { video:'var(--blue-dim)', pdf:'var(--red-dim)', quiz:'var(--amber-dim)' };
-  const typeIcon  = { video:'Video', pdf:'FileText', quiz:'Pencil' };
+  const typeIcon  = { video:'Video', pdf:'FileText', pptx:'Layers', quiz:'Pencil' };
+  const typeColor2 = { video:'var(--blue)', pdf:'var(--red)', pptx:'var(--purple)', quiz:'var(--amber)' };
+  const typeDim2   = { video:'var(--blue-dim)', pdf:'var(--red-dim)', pptx:'var(--purple-dim)', quiz:'var(--amber-dim)' };
 
   return (
     <div className="fade-in">
@@ -1113,6 +1119,29 @@ function CoursePreview({ course, onBack, onEdit }) {
                     <div style={{ fontSize:12, color:'#444', lineHeight:1.7 }}>
                       This PDF document covers {mod.title.toLowerCase()} for {course.category} training. Read all sections carefully before attempting the quiz.
                     </div>
+                  </div>
+                </div>
+              )}
+
+              {mod.type === 'pptx' && (
+                <div style={{
+                  background:'linear-gradient(135deg,#1E0A3C,#2D1B69)',
+                  borderRadius:'var(--r3)', padding:'28px',
+                  display:'flex', flexDirection:'column', alignItems:'center',
+                  marginBottom:12, minHeight:240,
+                }}>
+                  <div style={{ fontSize:48, marginBottom:10 }}>📊</div>
+                  <div style={{ fontSize:15, fontWeight:700, color:'#fff', marginBottom:6 }}>{mod.title}</div>
+                  <div style={{ fontSize:11, color:'rgba(255,255,255,0.4)', marginBottom:20, fontFamily:'var(--font-mono)' }}>{mod.file}</div>
+                  <div style={{ display:'flex', gap:8, justifyContent:'center', marginBottom:16 }}>
+                    {[1,2,3,4,5].map(n=>(
+                      <div key={n} style={{ width:72, height:46, background:n===1?'rgba(255,255,255,0.18)':'rgba(255,255,255,0.07)', border:n===1?'2px solid rgba(255,255,255,0.4)':'1px solid rgba(255,255,255,0.12)', borderRadius:5, display:'flex', alignItems:'center', justifyContent:'center', fontSize:10, fontWeight:600, color:n===1?'rgba(255,255,255,0.9)':'rgba(255,255,255,0.3)', cursor:'pointer' }}>{n}</div>
+                    ))}
+                  </div>
+                  <div style={{ display:'flex', gap:10 }}>
+                    <button style={{ background:'rgba(255,255,255,0.12)', border:'1px solid rgba(255,255,255,0.2)', color:'#fff', borderRadius:6, padding:'5px 16px', cursor:'pointer', fontSize:12, fontWeight:600 }}>‹ Prev</button>
+                    <span style={{ fontSize:11, color:'rgba(255,255,255,0.4)', fontFamily:'var(--font-mono)', alignSelf:'center' }}>Slide 1 of 5</span>
+                    <button style={{ background:'rgba(255,255,255,0.12)', border:'1px solid rgba(255,255,255,0.2)', color:'#fff', borderRadius:6, padding:'5px 16px', cursor:'pointer', fontSize:12, fontWeight:600 }}>Next ›</button>
                   </div>
                 </div>
               )}
@@ -1232,7 +1261,7 @@ function CoursePreview({ course, onBack, onEdit }) {
 
 // ── Main CoursesPage ──────────────────────────────────────────────
 export default function CoursesPage() {
-  const [courses,       setCourses]       = useState(INITIAL_COURSES);
+  const [courses, setCourses] = useLocalStorage('tl_courses', INITIAL_COURSES);
   const [editing,       setEditing]       = useState(null);
   const [creating,      setCreating]      = useState(false);
   const [filter,        setFilter]        = useState('All');
@@ -1477,9 +1506,9 @@ export default function CoursesPage() {
                   display:'flex', gap:6, flexWrap:'wrap',
                 }}>
                   {c.modules.map((mod, mi) => {
-                    const modIcon  = mod.type==='video' ? 'Video' : mod.type==='pdf' ? 'FileText' : 'Pencil';
-                    const modColor = mod.type==='video' ? 'var(--blue)' : mod.type==='pdf' ? 'var(--red)' : 'var(--amber)';
-                    const modDim   = mod.type==='video' ? 'var(--blue-dim)' : mod.type==='pdf' ? 'var(--red-dim)' : 'var(--amber-dim)';
+                    const modIcon  = mod.type==='video'?'Video':mod.type==='pdf'?'FileText':mod.type==='pptx'?'Layers':'Pencil';
+                    const modColor = mod.type==='video'?'var(--blue)':mod.type==='pdf'?'var(--red)':mod.type==='pptx'?'var(--purple)':'var(--amber)';
+                    const modDim   = mod.type==='video'?'var(--blue-dim)':mod.type==='pdf'?'var(--red-dim)':mod.type==='pptx'?'var(--purple-dim)':'var(--amber-dim)';
                     return (
                       <div key={mi} style={{
                         display:'flex', alignItems:'center', gap:5,

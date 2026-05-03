@@ -413,6 +413,6 @@ export default function MyCourses() {
           );
         })}
       </div>
-    </div>
+      </div>
   );
 }

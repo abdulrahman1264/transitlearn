@@ -63,6 +63,6 @@ export default function GenericPage({ view }) {
           ))}
         </div>
       </div>
-    </div>
+      </div>
   );
 }

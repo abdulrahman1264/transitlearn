@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react';
 import Icon from '../components/Icons';
+import { useLocalStorage } from '../hooks/useLocalStorage';
 
 const BATCHES = [
   { id:'Batch 153', label:'Batch 153 — Apr 2026', category:'public-pre',  catLabel:'Public Bus — Pre Service', color:'blue'  },

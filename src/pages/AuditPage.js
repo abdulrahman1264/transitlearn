@@ -178,6 +178,6 @@ export default function AuditPage() {
           </tbody>
         </table>
       </div>
-    </div>
+      </div>
   );
 }
